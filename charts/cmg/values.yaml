@@ -3,8 +3,8 @@
 # Declare variables to be passed into your templates.
 replicaCount: 1
 image:
-  repository: draft
-  tag: dev
+  repository: 10.55.252.137:5000/joostvdg/cmg
+  tag: 0.0.2
   pullPolicy: IfNotPresent
 service:
   name: cmg
