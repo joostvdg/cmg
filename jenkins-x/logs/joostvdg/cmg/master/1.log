@@ -1,6 +1,154 @@
 Step: build-step-credential-initializer:
 
+{"level":"warn","ts":1548887468.650563,"logger":"fallback-logger","caller":"logging/config.go:65","msg":"Fetch GitHub commit ID from kodata failed: \"ref: refs/heads/test\" is not a valid GitHub commit ID"}
+{"level":"info","ts":1548887468.6513941,"logger":"fallback-logger","caller":"creds-init/main.go:40","msg":"Credentials initialized."}
 Step: build-step-git-source-0:
 
+{"level":"warn","ts":1548887471.0082781,"logger":"fallback-logger","caller":"logging/config.go:65","msg":"Fetch GitHub commit ID from kodata failed: \"ref: refs/heads/test\" is not a valid GitHub commit ID"}
+{"level":"info","ts":1548887472.1887438,"logger":"fallback-logger","caller":"git-init/main.go:92","msg":"Successfully cloned \"https://github.com/joostvdg/cmg.git\" @ \"master\" in path \"/workspace\""}
 Step: build-step-jenkins:
 
+Picked up _JAVA_OPTIONS: -Xmx400m
+Started
+Running in Durability level: PERFORMANCE_OPTIMIZED
+  17.883 [id=34]	WARNING	i.f.k.c.i.VersionUsageUtils#alert: The client is using resource type 'customresourcedefinitions' with unstable version 'v1beta1'
+[Pipeline] node
+Running on Jenkins in /tmp/jenkinsTests.tmp/jenkins1210055668562344663test/workspace/job
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withCredentials
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (CI Build and push snapshot)
+Stage "CI Build and push snapshot" skipped due to when conditional
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Release)
+[Pipeline] dir
+Running in /home/jenkins/go/src/github.com/joostvdg/cmg
+[Pipeline] {
+[Pipeline] git
+Cloning the remote Git repository
+Cloning repository https://github.com/joostvdg/cmg.git
+ > git init /home/jenkins/go/src/github.com/joostvdg/cmg # timeout=10
+Fetching upstream changes from https://github.com/joostvdg/cmg.git
+ > git --version # timeout=10
+ > git fetch --tags --progress https://github.com/joostvdg/cmg.git +refs/heads/*:refs/remotes/origin/*
+ > git config remote.origin.url https://github.com/joostvdg/cmg.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/joostvdg/cmg.git # timeout=10
+Fetching upstream changes from https://github.com/joostvdg/cmg.git
+ > git fetch --tags --progress https://github.com/joostvdg/cmg.git +refs/heads/*:refs/remotes/origin/*
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git rev-parse refs/remotes/origin/origin/master^{commit} # timeout=10
+Checking out Revision bf1a4cd929ccce1135a4085df75c6b8e8ec2edfc (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f bf1a4cd929ccce1135a4085df75c6b8e8ec2edfc
+ > git branch -a -v --no-abbrev # timeout=10
+ > git checkout -b master bf1a4cd929ccce1135a4085df75c6b8e8ec2edfc
+Commit message: "Draft create"
+First time build. Skipping changelog.
+[Pipeline] sh
++ jx-release-version
++ echo 0.0.1
+[Pipeline] sh
++ cat VERSION
++ jx step tag --version 0.0.1
+Tag v0.0.1 created and pushed to remote origin
+[Pipeline] sh
++ make build
+CGO_ENABLED=0 GO15VENDOREXPERIMENT=1 go build -ldflags '' -o bin/cmg main.go
+[Pipeline] sh
++ cat VERSION
++ export VERSION=0.0.1
++ skaffold build -f skaffold.yaml
+time="2019-01-30T22:33:47Z" level=warning msg="config version (skaffold/v1beta2) out of date: upgrading to latest (skaffold/v1beta3)"
+Starting build...
+Building [changeme]...
+Sending build context to Docker daemon  525.8kBSending build context to Docker daemon  6.502MB
+Step 1/4 : FROM scratch
+ ---> 
+Step 2/4 : EXPOSE 8080
+ ---> Running in 5846cc944ca4
+ ---> 360b751a828e
+Step 3/4 : ENTRYPOINT /cmg
+ ---> Running in e045d2069bbc
+ ---> f658b9432db1
+Step 4/4 : COPY ./bin/ /
+ ---> e7df7ea40849
+Successfully built e7df7ea40849
+The push refers to a repository [10.55.252.137:5000/joostvdg/cmg]
+94e248a5577f: Preparing
+94e248a5577f: Pushed
+0.0.1: digest: sha256:8e781247310ea73771cf2da3e7f5db27d3639059ab2b8fd5dbcdc2969252b3e1 size: 528
+Build complete in 1.643342848s
+Starting test...
+Test complete in 4.879µs
+changeme -> 10.55.252.137:5000/joostvdg/cmg:0.0.1
+[Pipeline] sh
++ cat VERSION
++ jx step post build --image 10.55.252.137:5000/joostvdg/cmg:0.0.1
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Promote to Environments)
+[Pipeline] dir
+Running in /home/jenkins/go/src/github.com/joostvdg/cmg/charts/cmg
+[Pipeline] {
+[Pipeline] sh
++ cat ../../VERSION
++ jx step changelog --version v0.0.1
+Using batch mode as inside a pipeline
+Generating change log from git ref bf1a4cd929ccce1135a4085df75c6b8e8ec2edfc => f61f390abfc805dcf7c6ad30d0f033912c046257
+Failed to enrich commits with issues: User.jenkins.io "" is invalid: metadata.name: Required value: name or generateName is required
+Failed to enrich commits with issues: User.jenkins.io "" is invalid: metadata.name: Required value: name or generateName is required
+Finding issues in commit messages using git format
+No release found for joostvdg/cmg and tag v0.0.1 so creating a new release
+Updated the release information at https://github.com/joostvdg/cmg/releases/tag/v0.0.1
+generated: /home/jenkins/go/src/github.com/joostvdg/cmg/charts/cmg/templates/release.yaml
+Created Release cmg-0-0-1 resource in namespace jx
+Updating PipelineActivity joostvdg-cmg-master-1 with version 0.0.1
+Updated PipelineActivities joostvdg-cmg-master-1 with release notes URL: https://github.com/joostvdg/cmg/releases/tag/v0.0.1
+[Pipeline] sh
++ jx step helm release
+No $CHART_REPOSITORY defined so using the default value of: http://jenkins-x-chartmuseum:8080
+Adding missing Helm repo: jenkins-x http://chartmuseum.jenkins-x.io
+Successfully added Helm repository jenkins-x.
+Adding missing Helm repo: releases http://jenkins-x-chartmuseum:8080
+Successfully added Helm repository releases.
+No $CHART_REPOSITORY defined so using the default value of: http://jenkins-x-chartmuseum:8080
+Uploading chart file cmg-0.0.1.tgz to http://jenkins-x-chartmuseum:8080/api/charts
+Received 201 response: {"saved":true}
+[Pipeline] sh
++ cat ../../VERSION
++ jx promote -b --all-auto --timeout 1h --version 0.0.1
+prow based install so skip waiting for the merge of Pull Requests to go green as currently there is an issue with gettingstatuses from the PR, see https://github.com/jenkins-x/jx/issues/2410
+Promoting app cmg version 0.0.1 to namespace jx-staging
+Created Pull Request: https://github.com/joostvdg/environment-jx-joostvdg-staging/pull/1
+
+Failed to query the Pull Request last commit status for https://github.com/joostvdg/environment-jx-joostvdg-staging/pull/1 ref 34509ad45c47c4f7e3251f4e7e39642bf10cfef7 Could not find a status for repository joostvdg/environment-jx-joostvdg-staging with ref 34509ad45c47c4f7e3251f4e7e39642bf10cfef7
+Rebasing PullRequest due to conflict
+Pull Request https://github.com/joostvdg/environment-jx-joostvdg-staging/pull/1 is closed
+error: Promotion failed as Pull Request https://github.com/joostvdg/environment-jx-joostvdg-staging/pull/1 is closed without merging
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
