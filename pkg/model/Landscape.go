@@ -11,9 +11,8 @@ const (
 	Mountain LandscapeCode = 5
 )
 
-
 type Landscape struct {
-	Name 		string
-	Code		LandscapeCode
-	Resource 	string
+	Name     string
+	Code     LandscapeCode
+	Resource string
 }

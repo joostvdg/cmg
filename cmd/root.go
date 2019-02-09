@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/mapgen"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -11,9 +12,17 @@ import (
 var GenCount int
 var GenLoop bool
 var Verbose bool
+var MaxScore int
+var MinScore int
+var MaxOver300 int
+var GameType int
 
 func init() {
-	mapGenCmd.Flags().IntVar(&GenCount,"count", 0, "Number of times to generate a map, only for loop")
+	mapGenCmd.Flags().IntVar(&MaxScore, "max", 361, "Maximum Probability score of 3 adjacent tiles")
+	mapGenCmd.Flags().IntVar(&MinScore, "min", 165, "Minumum Probability score of 3 adjacent tiles")
+	mapGenCmd.Flags().IntVar(&GameType, "gametype", 0, "GameType, 0 = normal, 1 = large (5or6 players)")
+	mapGenCmd.Flags().IntVar(&MaxOver300, "max300", 14, "Number times the probability score of 3 adjacent tiles can exceed 300")
+	mapGenCmd.Flags().IntVar(&GenCount, "count", 0, "Number of times to generate a map, only for loop")
 	mapGenCmd.Flags().BoolVar(&GenLoop, "loop", false, "Generate maps in a loop 'count' times, or just once")
 	mapGenCmd.Flags().BoolVar(&Verbose, "verbose", false, "Verbose logging")
 	rootCmd.AddCommand(mapGenCmd)
@@ -24,7 +33,13 @@ var mapGenCmd = &cobra.Command{
 	Short: "Will generate a map",
 	Long:  `Anything to do with generating a Catan map`,
 	Run: func(cmd *cobra.Command, args []string) {
-		mapgen.GenerateMap(GenCount, GenLoop, Verbose)
+		rules := game.GameRules{
+			GameType:     0,
+			MinimumScore: MinScore,
+			MaximumScore: MaxScore,
+			MaxOver300:   MaxOver300,
+		}
+		mapgen.GenerateMap(GenCount, GenLoop, Verbose, rules)
 	},
 }
 

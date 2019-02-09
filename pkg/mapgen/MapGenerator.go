@@ -2,6 +2,7 @@ package mapgen
 
 import (
 	"fmt"
+	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
@@ -11,50 +12,57 @@ import (
 type Game int
 
 const (
-	Normal		Game = 0
-	FiveOrSix	Game = 1
+	Normal    Game = 0
+	FiveOrSix Game = 1
 )
 
 const (
-	NormalTilesCount	= 19
-	NormalDesertCount	= 1
-	NormalForestCount	= 4
-	NormalPastureCount	= 4
-	NormalFieldCount	= 4
-	NormalRiverCount	= 3
-	NormalMountainCount	= 3
+	NormalTilesCount    = 19
+	NormalDesertCount   = 1
+	NormalForestCount   = 4
+	NormalPastureCount  = 4
+	NormalFieldCount    = 4
+	NormalRiverCount    = 3
+	NormalMountainCount = 3
 )
 
-func GenerateMap(count int, loop bool, verbose bool) {
+func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 
 	numberOfLoops := count
 	if !loop {
 		numberOfLoops = 1
 	}
 
+	var gameType game.GameType
+	if rules.GameType == 0 {
+		gameType = game.NormalGame
+	} else if rules.GameType == 1 {
+		gameType = game.LargeGame
+	}
+
 	failedGenerations := 0
 	totalGenerations := 0
-	board := generateMap(verbose)
+	board := generateMap(gameType, verbose)
 	for i := 0; i < numberOfLoops; i++ {
 		totalGenerations++
-		for !board.IsValid(verbose) {
+		for !board.IsValid(rules, gameType, verbose) {
 			if totalGenerations > 1001 {
 				log.Fatal("Can not generate a map... (1000+ runs)")
 			}
 			log.Info(fmt.Sprintf("Loop %v::%v", i, failedGenerations))
 			totalGenerations++
 			failedGenerations++
-			board = generateMap(verbose)
+			board = generateMap(gameType, verbose)
 		}
 		board.PrintToConsole()
 	}
 	log.WithFields(log.Fields{
-		"Map Generation Loops": numberOfLoops,
-		"Map Generation Failures":   failedGenerations,
+		"Map Generation Loops":    numberOfLoops,
+		"Map Generation Failures": failedGenerations,
 	}).Info("Finished generation loop:")
 }
 
-func generateMap(verbose bool) (model.Board) {
+func generateMap(game game.GameType, verbose bool) model.Board {
 
 	log.Info("Generating new Map")
 	tiles := generateTiles(Normal)
@@ -105,7 +113,7 @@ func addTilesOfType(number int, landscape model.LandscapeCode) []*model.Tile {
 }
 
 func generateNumberSet() []*model.Number {
-	numbers := make([]*model.Number, 0, NormalTilesCount - 1)
+	numbers := make([]*model.Number, 0, NormalTilesCount-1)
 
 	numbers = append(numbers, &model.Number{Number: 2, Weight: 27})
 	numbers = append(numbers, &model.Number{Number: 3, Weight: 55})
@@ -130,7 +138,7 @@ func generateNumberSet() []*model.Number {
 }
 
 func distributeNumbersNormalGame(tileSet []*model.Tile, numbers []*model.Number) {
-	numbersAllocated := make([]int, 0, NormalTilesCount - 1)
+	numbersAllocated := make([]int, 0, NormalTilesCount-1)
 	randomRange := (NormalTilesCount - 1) // desert tile doesn't get a number
 	log.Info("Allocating numbers to Tiles")
 	for i := 0; i < NormalTilesCount; i++ {
@@ -230,7 +238,7 @@ func drawTileNumber(randomRange int, numbersAllocated []int) int {
 	rand.Seed(time.Now().UnixNano())
 	number := rand.Intn(randomRange)
 	for numberIsAllocated(number, numbersAllocated) {
-		number =  rand.Intn(randomRange)
+		number = rand.Intn(randomRange)
 	}
 	return number
 }
