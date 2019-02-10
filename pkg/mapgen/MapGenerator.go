@@ -118,9 +118,9 @@ func distributeTiles(gameType game.GameType, tileSet []*model.Tile, verbose bool
 
 	randomRange := gameType.TilesCount
 	numbersAllocated := make([]int, 0, gameType.TilesCount)
-	for gridLane, tileInLane := range gameType.BoardLayout {
-		tilesLine := make([]*model.Tile, tileInLane, tileInLane)
-		for i := 0; i < tileInLane; i++ {
+	for gridLane, tilesInLane := range gameType.BoardLayout {
+		tilesLine := make([]*model.Tile, tilesInLane, tilesInLane)
+		for i := 0; i < tilesInLane; i++ {
 			drawnTileNumber := drawTileNumber(randomRange, numbersAllocated)
 			tile := tileSet[drawnTileNumber]
 			numbersAllocated = append(numbersAllocated, drawnTileNumber)

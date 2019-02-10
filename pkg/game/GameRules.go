@@ -1,8 +1,10 @@
 package game
 
 type GameRules struct {
-	MaximumScore int
-	MinimumScore int
-	MaxOver300   int
-	GameType     int
+	MaximumScore         int
+	MinimumScore         int
+	MaximumResourceScore int
+	MinimumResourceScore int
+	MaxOver300           int
+	GameType             int
 }

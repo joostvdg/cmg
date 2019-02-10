@@ -14,13 +14,17 @@ var GenLoop bool
 var Verbose bool
 var MaxScore int
 var MinScore int
+var MaxResourceScore int
+var MinResourceScore int
 var MaxOver300 int
 var GameType int
 
 func init() {
 	mapGenCmd.Flags().IntVar(&MaxScore, "max", 361, "Maximum Probability score of 3 adjacent tiles")
-	mapGenCmd.Flags().IntVar(&MinScore, "min", 165, "Minumum Probability score of 3 adjacent tiles")
-	mapGenCmd.Flags().IntVar(&GameType, "gametype", 0, "GameType, 0 = normal, 1 = large (5or6 players)")
+	mapGenCmd.Flags().IntVar(&MinScore, "min", 165, "Minimum Probability score of 3 adjacent tiles")
+	mapGenCmd.Flags().IntVar(&MaxResourceScore, "maxResource", 120, "Maximum average Probability score for resources per tile")
+	mapGenCmd.Flags().IntVar(&MinResourceScore, "minResource", 40, "Minimum average Probability score for resources per tile")
+	mapGenCmd.Flags().IntVar(&GameType, "gameType", 0, "GameType, 0 = normal, 1 = large (5or6 players)")
 	mapGenCmd.Flags().IntVar(&MaxOver300, "max300", 14, "Number times the probability score of 3 adjacent tiles can exceed 300")
 	mapGenCmd.Flags().IntVar(&GenCount, "count", 0, "Number of times to generate a map, only for loop")
 	mapGenCmd.Flags().BoolVar(&GenLoop, "loop", false, "Generate maps in a loop 'count' times, or just once")
@@ -38,6 +42,8 @@ var mapGenCmd = &cobra.Command{
 			MinimumScore: MinScore,
 			MaximumScore: MaxScore,
 			MaxOver300:   MaxOver300,
+			MaximumResourceScore: MaxResourceScore,
+			MinimumResourceScore: MinResourceScore,
 		}
 		mapgen.GenerateMap(GenCount, GenLoop, Verbose, rules)
 	},

@@ -13,17 +13,76 @@ type Board struct {
 	GameType GameType
 }
 
-// TODO: validate distribution: do we have to many > 300 spots or to many < 200 spots
+// TODO: validate distribution of numbers on resources: no resource has more than one of 6 or 8
 func (b *Board) IsValid(rules GameRules, game GameType, verbose bool) bool {
-	return len(b.Tiles) == game.TilesCount && b.validateAdjacentTiles(rules, verbose)
+	return len(b.Tiles) == game.TilesCount &&
+		b.validateAdjacentTiles(rules, verbose) &&
+		b.validateResourceScores(rules, verbose)
+}
+
+func (b *Board) validateResourceScores(rules GameRules, verbose bool) bool {
+	isValid := true
+	resourceCounts := make([]int, 6, 6)
+	resourceScores := make([]int, 6, 6)
+	resourceScores[model.Desert] = 0
+	resourceScores[model.Forest] = 0
+	resourceScores[model.Pasture] = 0
+	resourceScores[model.Field] = 0
+	resourceScores[model.River] = 0
+	resourceScores[model.Mountain] = 0
+	resourceCounts[model.Desert] = 0
+	resourceCounts[model.Forest] = 0
+	resourceCounts[model.Pasture] = 0
+	resourceCounts[model.Field] = 0
+	resourceCounts[model.River] = 0
+	resourceCounts[model.Mountain] = 0
+
+	for _,tile := range b.Tiles {
+		switch tile.Landscape {
+		case model.Forest:
+			resourceScores[model.Forest] = resourceScores[model.Forest] + tile.Number.Score
+			resourceCounts[model.Forest] = resourceCounts[model.Forest] + 1
+		case model.Pasture:
+			resourceScores[model.Pasture] = resourceScores[model.Pasture] + tile.Number.Score
+			resourceCounts[model.Pasture] = resourceCounts[model.Pasture] + 1
+		case model.Field:
+			resourceScores[model.Field] = resourceScores[model.Field] + tile.Number.Score
+			resourceCounts[model.Field] = resourceCounts[model.Field] + 1
+		case model.River:
+			resourceScores[model.River] = resourceScores[model.River] + tile.Number.Score
+			resourceCounts[model.River] = resourceCounts[model.River] + 1
+		case model.Mountain:
+			resourceScores[model.Mountain] = resourceScores[model.Mountain] + tile.Number.Score
+			resourceCounts[model.Mountain] = resourceCounts[model.Mountain] + 1
+		}
+	}
+
+	for resourceId,score := range resourceScores {
+		if resourceId == 0 {
+			// skip Desert tiles
+			continue
+		}
+		avgScore := score / resourceCounts[resourceId]
+		if avgScore > rules.MaximumResourceScore || avgScore < rules.MinimumResourceScore {
+			log.WithFields(log.Fields{
+				"resourceId": resourceId,
+				"avgScore":    avgScore,
+			}).Warn("Invalid scoring for resource:")
+			isValid = false
+		}
+	}
+
+	return isValid
 }
 
 func (b *Board) validateAdjacentTiles(rules GameRules, verbose bool) bool {
 
-	weights := make([]int, 0, len(b.GameType.AdjacentTileGroups))
+	scoresOver300 := 0
 	for _, tileGroup := range b.GameType.AdjacentTileGroups {
 		valid, weightTotal := b.validateAdjectTileGroup(rules.MaximumScore, rules.MinimumScore, tileGroup[0], tileGroup[1], tileGroup[2])
-		weights = append(weights, weightTotal)
+		if weightTotal > 300 {
+			scoresOver300++
+		}
 		if verbose {
 			tileGroupSet := fmt.Sprintf("[%s, %s, %s]", tileGroup[0], tileGroup[1], tileGroup[2])
 			log.WithFields(log.Fields{
@@ -35,6 +94,11 @@ func (b *Board) validateAdjacentTiles(rules GameRules, verbose bool) bool {
 			return false
 		}
 	}
+
+	if scoresOver300 > rules.MaxOver300 {
+		return false
+	}
+
 	return true
 
 }
@@ -140,7 +204,7 @@ func (board *Board) element(code string) string {
 		element := fmt.Sprintf("%s%v", padding, number)
 		return element
 	case "w": // weight of the number
-		return fmt.Sprintf("%v", board.Board[column][row].Number.Weight)
+		return fmt.Sprintf("%v", board.Board[column][row].Number.Score)
 	default: // todo: panic?
 		return ""
 	}
