@@ -16,8 +16,8 @@ type GameType struct {
 	MountainCount      int
 	HarborCount        int
 	AdjacentTileGroups [][]string
-	NumberSet 		   []*model.Number
-	BoardLayout		   map[string]int
+	NumberSet          []*model.Number
+	BoardLayout        map[string]int
 }
 
 func createLargeGame() GameType {
@@ -59,8 +59,8 @@ func createNormalGame() GameType {
 		RiverCount:    3,
 		MountainCount: 3,
 		HarborCount:   6,
-		NumberSet: generateNumberSetNormal(19),
-		BoardLayout: generateNormalGameLayout(),
+		NumberSet:     generateNumberSetNormal(19),
+		BoardLayout:   generateNormalGameLayout(),
 	}
 	game.AdjacentTileGroups = [][]string{
 		{"0aw", "1aw", "1bw"},
@@ -107,7 +107,6 @@ func generateNormalGameLayout() map[string]int {
 
 	return boardLayout
 }
-
 
 func generateNumberSetNormal(numberOfTiles int) []*model.Number {
 	numbers := make([]*model.Number, 0, numberOfTiles-1)

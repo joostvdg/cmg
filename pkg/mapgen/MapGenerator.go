@@ -97,8 +97,6 @@ func addTilesOfType(number int, landscape model.LandscapeCode) []*model.Tile {
 	return tiles
 }
 
-
-
 func distributeNumbers(game game.GameType, tileSet []*model.Tile) {
 	numbersAllocated := make([]int, 0, game.TilesCount-1)
 	randomRange := (game.TilesCount - 1) // desert tile doesn't get a number
