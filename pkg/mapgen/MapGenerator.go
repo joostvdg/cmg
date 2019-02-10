@@ -94,7 +94,7 @@ func addTilesOfType(number int, landscape model.LandscapeCode, resource model.Re
 	for i := 0; i < number; i++ {
 		tile := model.Tile{
 			Landscape: landscape,
-			Resource: resource,
+			Resource:  resource,
 		}
 		tiles[i] = &tile
 	}

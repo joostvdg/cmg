@@ -12,6 +12,6 @@ const (
 )
 
 type Landscape struct {
-	Name     string
-	Code     LandscapeCode
+	Name string
+	Code LandscapeCode
 }

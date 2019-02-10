@@ -123,7 +123,7 @@ func (b *Board) validateAdjectTileGroup(max int, min int, tileCodeA string, tile
 
 // validateHarbors validates whether or not a harbor is linked to a resource tile with the same resource as the harbor
 func (b *Board) validateHarbors() bool {
-	for k,v := range b.Harbors {
+	for k, v := range b.Harbors {
 		harborResource := v.Resource
 		tileCodeA := k
 		tileCodeB := ""
@@ -175,12 +175,12 @@ func (b *Board) PrintToConsole() {
 	h := b.Harbors
 
 	// 5x10
-	fmt.Printf(fmt.Sprintf(line00TemplateNormal, h["c0"].Resource))                                // 0
+	fmt.Printf(fmt.Sprintf(line00TemplateNormal, h["c0"].Resource)) // 0
 	fmt.Printf(fmt.Sprintf(line01TemplateNormal, b.element("0cn"))) // 1 - 0cn
 	fmt.Printf(fmt.Sprintf(line02TemplateNormal,
 		h["a0,b0"].Resource,
 		b.element("0bn"), b.element("0cl"), b.element("0dn"),
-		h["e0,d0"].Resource,)) // 2 - 0bn, 0cl, 0dn
+		h["e0,d0"].Resource)) // 2 - 0bn, 0cl, 0dn
 	fmt.Printf(fmt.Sprintf(line03TemplateNormal,
 		b.element("0an"),
 		b.element("0bl"),
@@ -200,7 +200,7 @@ func (b *Board) PrintToConsole() {
 		b.element("2cn"),
 		b.element("1dl"),
 		b.element("1en"),
-		h["e1,e0"].Resource,)) // 5 - 1an, 1bl, 2cn, 1dl, 1en
+		h["e1,e0"].Resource)) // 5 - 1an, 1bl, 2cn, 1dl, 1en
 	fmt.Printf(fmt.Sprintf(line06TemplateNormal,
 		b.element("1al"),
 		b.element("2bn"),
@@ -228,8 +228,8 @@ func (b *Board) PrintToConsole() {
 	fmt.Printf(fmt.Sprintf(line10TemplateNormal,
 		h["b3,c4"].Resource,
 		b.element("4cl"),
-		h["d3,c4"].Resource,)) // 10 - 4cl
-	fmt.Printf(line11TemplateNormal)                                // 11
+		h["d3,c4"].Resource)) // 10 - 4cl
+	fmt.Printf(line11TemplateNormal) // 11
 }
 
 func (board *Board) element(code string) string {
