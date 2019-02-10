@@ -14,5 +14,4 @@ const (
 type Landscape struct {
 	Name     string
 	Code     LandscapeCode
-	Resource string
 }

@@ -62,10 +62,13 @@ func generateMap(gameType game.GameType, verbose bool) game.Board {
 		}
 	}
 	boardMap := distributeTiles(gameType, tiles, verbose)
+	harborMap := distributeHarbors(gameType)
+
 	board := &game.Board{
 		Tiles:    tiles,
 		Board:    boardMap,
 		GameType: gameType,
+		Harbors:  harborMap,
 	}
 	log.Info("Created a new board")
 	return *board
@@ -77,20 +80,21 @@ func generateTiles(gameType game.GameType) []*model.Tile {
 	}
 
 	tiles := make([]*model.Tile, 0, gameType.TilesCount)
-	tiles = append(tiles, addTilesOfType(gameType.DesertCount, model.Desert)...)
-	tiles = append(tiles, addTilesOfType(gameType.FieldCount, model.Field)...)
-	tiles = append(tiles, addTilesOfType(gameType.ForestCount, model.Forest)...)
-	tiles = append(tiles, addTilesOfType(gameType.MountainCount, model.Mountain)...)
-	tiles = append(tiles, addTilesOfType(gameType.PastureCount, model.Pasture)...)
-	tiles = append(tiles, addTilesOfType(gameType.RiverCount, model.River)...)
+	tiles = append(tiles, addTilesOfType(gameType.DesertCount, model.Desert, model.None)...)
+	tiles = append(tiles, addTilesOfType(gameType.FieldCount, model.Field, model.Grain)...)
+	tiles = append(tiles, addTilesOfType(gameType.ForestCount, model.Forest, model.Lumber)...)
+	tiles = append(tiles, addTilesOfType(gameType.MountainCount, model.Mountain, model.Ore)...)
+	tiles = append(tiles, addTilesOfType(gameType.PastureCount, model.Pasture, model.Wool)...)
+	tiles = append(tiles, addTilesOfType(gameType.RiverCount, model.River, model.Brick)...)
 	return tiles
 }
 
-func addTilesOfType(number int, landscape model.LandscapeCode) []*model.Tile {
+func addTilesOfType(number int, landscape model.LandscapeCode, resource model.Resource) []*model.Tile {
 	tiles := make([]*model.Tile, number, number)
 	for i := 0; i < number; i++ {
 		tile := model.Tile{
 			Landscape: landscape,
+			Resource: resource,
 		}
 		tiles[i] = &tile
 	}
@@ -133,6 +137,26 @@ func distributeTiles(gameType game.GameType, tileSet []*model.Tile, verbose bool
 		}
 	}
 	return tilesOnBoard
+}
+
+func distributeHarbors(gameType game.GameType) map[string]*model.Harbor {
+	var harborsOnBoard map[string]*model.Harbor
+	harborsOnBoard = make(map[string]*model.Harbor)
+
+	randomRange := gameType.HarborCount
+	numbersAllocated := make([]int, 0, gameType.HarborCount)
+	for _, positions := range gameType.HarborLayout {
+		drawnNumber := drawTileNumber(randomRange, numbersAllocated)
+		harbor := gameType.HarborSet[drawnNumber]
+		numbersAllocated = append(numbersAllocated, drawnNumber)
+		harborPosition := positions[0]
+		if len(positions) > 1 {
+			harborPosition = fmt.Sprintf("%s,%s", positions[0], positions[1])
+		}
+		harborsOnBoard[harborPosition] = harbor
+	}
+
+	return harborsOnBoard
 }
 
 func drawTileNumber(randomRange int, numbersAllocated []int) int {

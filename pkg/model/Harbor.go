@@ -3,12 +3,13 @@ package model
 type Resource int
 
 const (
-	Grain  Resource = 0
+	All    Resource = 0
 	Lumber Resource = 1
 	Wool   Resource = 2
-	Brick  Resource = 3
-	Ore    Resource = 4
-	None   Resource = 5
+	Grain  Resource = 3
+	Brick  Resource = 4
+	Ore    Resource = 5
+	None   Resource = 6 // Desert
 )
 
 type Harbor struct {

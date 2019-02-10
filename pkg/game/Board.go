@@ -5,19 +5,21 @@ import (
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"strconv"
+	"strings"
 )
 
 type Board struct {
 	Tiles    []*model.Tile
 	Board    map[string][]*model.Tile
 	GameType GameType
+	Harbors  map[string]*model.Harbor
 }
 
-// TODO: validate distribution of numbers on resources: no resource has more than one of 6 or 8
 func (b *Board) IsValid(rules GameRules, game GameType, verbose bool) bool {
 	return len(b.Tiles) == game.TilesCount &&
 		b.validateAdjacentTiles(rules, verbose) &&
-		b.validateResourceScores(rules, verbose)
+		b.validateResourceScores(rules, verbose) &&
+		b.validateHarbors()
 }
 
 func (b *Board) validateResourceScores(rules GameRules, verbose bool) bool {
@@ -37,7 +39,7 @@ func (b *Board) validateResourceScores(rules GameRules, verbose bool) bool {
 	resourceCounts[model.River] = 0
 	resourceCounts[model.Mountain] = 0
 
-	for _,tile := range b.Tiles {
+	for _, tile := range b.Tiles {
 		switch tile.Landscape {
 		case model.Forest:
 			resourceScores[model.Forest] = resourceScores[model.Forest] + tile.Number.Score
@@ -57,7 +59,7 @@ func (b *Board) validateResourceScores(rules GameRules, verbose bool) bool {
 		}
 	}
 
-	for resourceId,score := range resourceScores {
+	for resourceId, score := range resourceScores {
 		if resourceId == 0 {
 			// skip Desert tiles
 			continue
@@ -66,7 +68,7 @@ func (b *Board) validateResourceScores(rules GameRules, verbose bool) bool {
 		if avgScore > rules.MaximumResourceScore || avgScore < rules.MinimumResourceScore {
 			log.WithFields(log.Fields{
 				"resourceId": resourceId,
-				"avgScore":    avgScore,
+				"avgScore":   avgScore,
 			}).Warn("Invalid scoring for resource:")
 			isValid = false
 		}
@@ -119,30 +121,66 @@ func (b *Board) validateAdjectTileGroup(max int, min int, tileCodeA string, tile
 	return true, weightTotal
 }
 
+// validateHarbors validates whether or not a harbor is linked to a resource tile with the same resource as the harbor
+func (b *Board) validateHarbors() bool {
+	for k,v := range b.Harbors {
+		harborResource := v.Resource
+		tileCodeA := k
+		tileCodeB := ""
+		if strings.Contains(tileCodeA, ",") {
+			tileCodes := strings.Split(tileCodeA, ",")
+			tileCodeA = tileCodes[0]
+			tileCodeB = tileCodes[1]
+		}
+		if sameResource(tileCodeA, harborResource, b.Board) || sameResource(tileCodeB, harborResource, b.Board) {
+			return false
+		}
+	}
+	return true
+}
+
+func sameResource(tileCode string, harborResource model.Resource, board map[string][]*model.Tile) bool {
+	if tileCode == "" {
+		return false
+	}
+	runeCode := []rune(tileCode)
+	column := string(runeCode[0:1])
+	row, _ := strconv.Atoi(string(runeCode[1:2]))
+	if board[column][row].Resource == harborResource {
+		return true
+	}
+
+	return false
+}
+
 const (
-	line00TemplateNormal string = "........................\n"
-	line01TemplateNormal string = "........../%v\\..........\n"
-	line02TemplateNormal string = "....../%v\\\\.%v//%v\\......\n"
-	line03TemplateNormal string = "../%v\\\\.%v//%v\\\\.%v//%v\\..\n"
-	line04TemplateNormal string = "..\\.%v//%v\\\\.%v//%v\\\\.%v/..\n"
-	line05TemplateNormal string = "../%v\\\\.%v//%v\\\\.%v//%v\\..\n"
-	line06TemplateNormal string = "..\\.%v//%v\\\\.%v//%v/\\.%v/..\n"
-	line07TemplateNormal string = "../%v\\\\.%v//%v\\\\.%v//%v\\..\n"
-	line08TemplateNormal string = "..\\.%v//%v\\\\.%v//%v\\\\.%v/..\n"
-	line09TemplateNormal string = "......\\.%v//%v\\\\.%v/......\n"
-	line10TemplateNormal string = "..........\\.%v/..........\n"
-	line11TemplateNormal string = "........................\n"
+	line00TemplateNormal string = "............H%v...........\n"
+	line01TemplateNormal string = ".........../%v\\...........\n"
+	line02TemplateNormal string = ".....H%v/%v\\\\.%v//%v\\H%v.....\n"
+	line03TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
+	line04TemplateNormal string = "...\\.%v//%v\\\\.%v//%v\\\\.%v/...\n"
+	line05TemplateNormal string = ".H%v/%v\\\\.%v//%v\\\\.%v//%v\\H%v.\n"
+	line06TemplateNormal string = "...\\.%v//%v\\\\.%v//%v/\\.%v/...\n"
+	line07TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
+	line08TemplateNormal string = ".H%v\\.%v//%v\\\\.%v//%v\\\\.%v/H%v.\n"
+	line09TemplateNormal string = ".......\\.%v//%v\\\\.%v/.......\n"
+	line10TemplateNormal string = "........H%v.\\.%v/.H%v........\n"
+	line11TemplateNormal string = "..........................\n"
 	//                          a    b    c    d    e
 	// a: [3], b: [4], c: [5], d: [4], e: [3]
 )
 
 func (b *Board) PrintToConsole() {
 
+	h := b.Harbors
+
 	// 5x10
-	fmt.Printf(line00TemplateNormal)                                // 0
+	fmt.Printf(fmt.Sprintf(line00TemplateNormal, h["c0"].Resource))                                // 0
 	fmt.Printf(fmt.Sprintf(line01TemplateNormal, b.element("0cn"))) // 1 - 0cn
 	fmt.Printf(fmt.Sprintf(line02TemplateNormal,
-		b.element("0bn"), b.element("0cl"), b.element("0dn"))) // 2 - 0bn, 0cl, 0dn
+		h["a0,b0"].Resource,
+		b.element("0bn"), b.element("0cl"), b.element("0dn"),
+		h["e0,d0"].Resource,)) // 2 - 0bn, 0cl, 0dn
 	fmt.Printf(fmt.Sprintf(line03TemplateNormal,
 		b.element("0an"),
 		b.element("0bl"),
@@ -156,11 +194,13 @@ func (b *Board) PrintToConsole() {
 		b.element("1dn"),
 		b.element("0el"))) // 4 - 0al, 1bn, 1cl, 1dn, 0el
 	fmt.Printf(fmt.Sprintf(line05TemplateNormal,
+		h["a1,a0"].Resource,
 		b.element("1an"),
 		b.element("1bl"),
 		b.element("2cn"),
 		b.element("1dl"),
-		b.element("1en"))) // 5 - 1an, 1bl, 2cn, 1dl, 1en
+		b.element("1en"),
+		h["e1,e0"].Resource,)) // 5 - 1an, 1bl, 2cn, 1dl, 1en
 	fmt.Printf(fmt.Sprintf(line06TemplateNormal,
 		b.element("1al"),
 		b.element("2bn"),
@@ -174,16 +214,21 @@ func (b *Board) PrintToConsole() {
 		b.element("2dl"),
 		b.element("2en"))) // 7 - 2an, 2bl, 3cn, 2dl, 2en
 	fmt.Printf(fmt.Sprintf(line08TemplateNormal,
+		h["a2"].Resource,
 		b.element("2al"),
 		b.element("3bn"),
 		b.element("3cl"),
 		b.element("3dn"),
-		b.element("2el"))) // 8 - 2al, 3bn, 3cl, 3dn, 2el
+		b.element("2el"),
+		h["e2"].Resource)) // 8 - 2al, 3bn, 3cl, 3dn, 2el
 	fmt.Printf(fmt.Sprintf(line09TemplateNormal,
 		b.element("3bl"),
 		b.element("4cn"),
 		b.element("3dl"))) // 9 - 3bl, 4cn, 3dl
-	fmt.Printf(fmt.Sprintf(line10TemplateNormal, b.element("4cl"))) // 10 - 4cl
+	fmt.Printf(fmt.Sprintf(line10TemplateNormal,
+		h["b3,c4"].Resource,
+		b.element("4cl"),
+		h["d3,c4"].Resource,)) // 10 - 4cl
 	fmt.Printf(line11TemplateNormal)                                // 11
 }
 
