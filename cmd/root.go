@@ -38,7 +38,7 @@ var mapGenCmd = &cobra.Command{
 	Long:  `Anything to do with generating a Catan map`,
 	Run: func(cmd *cobra.Command, args []string) {
 		rules := game.GameRules{
-			GameType:             0,
+			GameType:             GameType,
 			MinimumScore:         MinScore,
 			MaximumScore:         MaxScore,
 			MaxOver300:           MaxOver300,

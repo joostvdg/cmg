@@ -75,9 +75,6 @@ func generateMap(gameType game.GameType, verbose bool) game.Board {
 }
 
 func generateTiles(gameType game.GameType) []*model.Tile {
-	if gameType.Name != "Normal" {
-		log.Fatal("Currently not supported")
-	}
 
 	tiles := make([]*model.Tile, 0, gameType.TilesCount)
 	tiles = append(tiles, addTilesOfType(gameType.DesertCount, model.Desert, model.None)...)
@@ -102,8 +99,8 @@ func addTilesOfType(number int, landscape model.LandscapeCode, resource model.Re
 }
 
 func distributeNumbers(game game.GameType, tileSet []*model.Tile) {
-	numbersAllocated := make([]int, 0, game.TilesCount-1)
-	randomRange := (game.TilesCount - 1) // desert tile doesn't get a number
+	numbersAllocated := make([]int, 0, game.TilesCount-game.DesertCount)
+	randomRange := (game.TilesCount - game.DesertCount) // desert tile doesn't get a number
 	log.Info("Allocating numbers to Tiles")
 	for i := 0; i < game.TilesCount; i++ {
 		if tileSet[i].Landscape == model.Desert {
