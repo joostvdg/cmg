@@ -31,7 +31,7 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 	for i := 0; i < numberOfLoops; i++ {
 		totalGenerations++
 		for !board.IsValid(rules, gameType, verbose) {
-			if totalGenerations > 1001 {
+			if totalGenerations > 1501 {
 				log.Fatal("Can not generate a map... (1000+ runs)")
 			}
 			log.Info(fmt.Sprintf("Loop %v::%v", i, failedGenerations))
