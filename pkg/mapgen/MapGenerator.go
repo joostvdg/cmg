@@ -27,7 +27,7 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 
 	failedGenerations := 0
 	totalGenerations := 0
-	board := generateMap(gameType, verbose)
+	board := MapGenerationAttempt(gameType, verbose)
 	for i := 0; i < numberOfLoops; i++ {
 		totalGenerations++
 		for !board.IsValid(rules, gameType, verbose) {
@@ -37,7 +37,7 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 			log.Info(fmt.Sprintf("Loop %v::%v", i, failedGenerations))
 			totalGenerations++
 			failedGenerations++
-			board = generateMap(gameType, verbose)
+			board = MapGenerationAttempt(gameType, verbose)
 		}
 		board.PrintToConsole()
 	}
@@ -47,7 +47,7 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 	}).Info("Finished generation loop:")
 }
 
-func generateMap(gameType game.GameType, verbose bool) game.Board {
+func MapGenerationAttempt(gameType game.GameType, verbose bool) game.Board {
 
 	log.Info("Generating new Map")
 	tiles := generateTiles(gameType)

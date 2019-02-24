@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/joostvdg/cmg/cmd/webserver"
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/mapgen"
 	log "github.com/sirupsen/logrus"
@@ -29,7 +30,9 @@ func init() {
 	mapGenCmd.Flags().IntVar(&GenCount, "count", 0, "Number of times to generate a map, only for loop")
 	mapGenCmd.Flags().BoolVar(&GenLoop, "loop", false, "Generate maps in a loop 'count' times, or just once")
 	mapGenCmd.Flags().BoolVar(&Verbose, "verbose", false, "Verbose logging")
+
 	rootCmd.AddCommand(mapGenCmd)
+	rootCmd.AddCommand(webServerCmd)
 }
 
 var mapGenCmd = &cobra.Command{
@@ -46,6 +49,15 @@ var mapGenCmd = &cobra.Command{
 			MinimumResourceScore: MinResourceScore,
 		}
 		mapgen.GenerateMap(GenCount, GenLoop, Verbose, rules)
+	},
+}
+
+var webServerCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "Starts an http server",
+	Long:  `Starts an http server that allows you to retrieve a generated map as json `,
+	Run: func(cmd *cobra.Command, args []string) {
+		webserver.StartWebserver()
 	},
 }
 
