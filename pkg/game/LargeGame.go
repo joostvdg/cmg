@@ -158,20 +158,6 @@ func CreateLargeGame() GameType {
 	return game
 }
 
-const (
-	line00TemplateNormal string = "............H%v...........\n"
-	line01TemplateNormal string = ".........../%v\\...........\n"
-	line02TemplateNormal string = ".....H%v/%v\\\\.%v//%v\\H%v.....\n"
-	line03TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
-	line04TemplateNormal string = "...\\.%v//%v\\\\.%v//%v\\\\.%v/...\n"
-	line05TemplateNormal string = ".H%v/%v\\\\.%v//%v\\\\.%v//%v\\H%v.\n"
-	line06TemplateNormal string = "...\\.%v//%v\\\\.%v//%v/\\.%v/...\n"
-	line07TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
-	line08TemplateNormal string = ".H%v\\.%v//%v\\\\.%v//%v\\\\.%v/H%v.\n"
-	line09TemplateNormal string = ".......\\.%v//%v\\\\.%v/.......\n"
-	line10TemplateNormal string = "........H%v.\\.%v/.H%v........\n"
-	line11TemplateNormal string = "..........................\n"
-)
 
 const (
 	//                          a    b    c    d    e
@@ -186,20 +172,20 @@ const (
 	// i4 = 4 +  1(Y) + 6(X-1) = 7 | 5
 	// i5 = 5 +  2(Y) + 6(X-1) = 8 | 4
 	// i6 = 6 +  3(Y) + 6(X-1) = 9 | 3
-	line00TemplateLarge string = "..................H%v..................\n"             //a- b- c- d- e- f- g-
-	line01TemplateLarge string = "................./%v\\.H%v..............\n"            //a- b- c- d0 e- f- g-
-	line02TemplateLarge string = "............./%v\\\\.%v//%v\\.............\n"          //a- b- c0 d0 e0 f- g-
-	line03TemplateLarge string = "......H%v./%v\\\\.%v//%v\\\\%v//.%v\\.H%v.......\n"    //a- b0 c0 d1 e0 f0 g-
-	line04TemplateLarge string = "...../%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.....\n"    //a0 b0 c1 d1 e1 f0 g0
-	line05TemplateLarge string = ".....\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.....\n"   //a0 b1 c1 d2 e1 f1 g0
-	line06TemplateLarge string = ".H%v./%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.H%v...\n"  //a1 b1 c2 d2 e2 f1 g1
-	line07TemplateLarge string = ".....\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.....\n"   //a1 b2 c2 d3 e2 f2 g1
-	line08TemplateLarge string = "...../%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.....\n"    //a2 b2 c3 d3 e3 f2 g2
-	line09TemplateLarge string = ".H%v.\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.H%v...\n" //a2 b3 c3 d4 e3 f3 g2
-	line10TemplateLarge string = ".........\\.%v//%v\\\\.%v//%v\\\\.%v/.........\n"      //a- b3 c4 d4 e4 f3 g-
-	line11TemplateLarge string = ".............\\.%v//%v\\\\.%v/.H%v.........\n"         //a- b- c4 d5 e4 f- g-
-	line12TemplateLarge string = ".............H%v.\\.%v/.H%v...............\n"          //a- b- c- d5 e- f- g-
-	line13TemplateLarge string = "......................................\n"              //a- b- c- d- e- f- g-
+	line00TemplateLarge string = "...................H%v..................\n"             //a- b- c- d- e- f- g-
+	line01TemplateLarge string = "................../%v\\.H%v..............\n"            //a- b- c- d0 e- f- g-
+	line02TemplateLarge string = "............../%v\\\\.%v//%v\\.............\n"          //a- b- c0 d0 e0 f- g-
+	line03TemplateLarge string = ".......H%v./%v\\\\.%v//%v\\\\%v//%v\\.H%v.......\n"    //a- b0 c0 d1 e0 f0 g-
+	line04TemplateLarge string = "....../%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.....\n"    //a0 b0 c1 d1 e1 f0 g0
+	line05TemplateLarge string = "......\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.....\n"   //a0 b1 c1 d2 e1 f1 g0
+	line06TemplateLarge string = "...H%v./%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.H%v.\n"  //a1 b1 c2 d2 e2 f1 g1
+	line07TemplateLarge string = "......\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.....\n"   //a1 b2 c2 d3 e2 f2 g1
+	line08TemplateLarge string = "....../%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.....\n"    //a2 b2 c3 d3 e3 f2 g2
+	line09TemplateLarge string = "...H%v.\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.H%v.\n" //a2 b3 c3 d4 e3 f3 g2
+	line10TemplateLarge string = "..........\\.%v//%v\\\\.%v//%v\\\\.%v/.........\n"      //a- b3 c4 d4 e4 f3 g-
+	line11TemplateLarge string = "..............\\.%v//%v\\\\.%v/.H%v.........\n"         //a- b- c4 d5 e4 f- g-
+	line12TemplateLarge string = "..............H%v.\\.%v/.H%v...............\n"          //a- b- c- d5 e- f- g-
+	line13TemplateLarge string = ".......................................\n"              //a- b- c- d- e- f- g-
 )
 
 // PrintLargeGameToConsole prints the game board to the console
@@ -236,7 +222,7 @@ func printLargeGameToConsole(b *Board) {
 		h["a0"].Resource,
 		b.element("0bn"),
 		b.element("0cl"),
-		b.element("1dl"),
+		b.element("1dn"),
 		b.element("0el"),
 		b.element("0fn"),
 		h["g0"].Resource)) //      0bn, 0cl, 1dn, 0el, 0fn,
@@ -299,9 +285,9 @@ func printLargeGameToConsole(b *Board) {
 		b.element("4en"),
 		b.element("3fl"))) //      3bl, 4cn, 4dl, 4en, 3fl
 	fmt.Printf(fmt.Sprintf(line11TemplateLarge,
-		b.element("4cn"),
-		b.element("5dl"),
-		b.element("4en"),
+		b.element("4cl"),
+		b.element("5dn"),
+		b.element("4el"),
 		h["f3"].Resource)) //           4cn, 5dl, 4en
 	fmt.Printf(fmt.Sprintf(line12TemplateLarge,
 		h["c4"].Resource,

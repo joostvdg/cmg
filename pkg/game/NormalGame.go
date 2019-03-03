@@ -5,6 +5,21 @@ import (
 	"github.com/joostvdg/cmg/pkg/model"
 )
 
+const (
+	line00TemplateNormal string = "............H%v...........\n"
+	line01TemplateNormal string = ".........../%v\\...........\n"
+	line02TemplateNormal string = ".....H%v/%v\\\\.%v//%v\\H%v.....\n"
+	line03TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
+	line04TemplateNormal string = "...\\.%v//%v\\\\.%v//%v\\\\.%v/...\n"
+	line05TemplateNormal string = ".H%v/%v\\\\.%v//%v\\\\.%v//%v\\H%v.\n"
+	line06TemplateNormal string = "...\\.%v//%v\\\\.%v//%v/\\.%v/...\n"
+	line07TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
+	line08TemplateNormal string = ".H%v\\.%v//%v\\\\.%v//%v\\\\.%v/H%v.\n"
+	line09TemplateNormal string = ".......\\.%v//%v\\\\.%v/.......\n"
+	line10TemplateNormal string = "........H%v.\\.%v/.H%v........\n"
+	line11TemplateNormal string = "..........................\n"
+)
+
 // createNormalGame creates a Normal game for up to four players.
 // Will create a board layout as shown below.
 // Harbors: [c0], [a0, a1], [a2], [b3, c4], [d3, c4], [e2], [e0, e1]
