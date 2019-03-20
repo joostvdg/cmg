@@ -1,0 +1,43 @@
+{
+	"Harbors": [{
+		"Name": "Grain",
+		"Id": "3"
+	}, {
+		"Name": "Wool",
+		"Id": "2"
+	}, {
+		"Name": "Ore",
+		"Id": "5"
+	}, {
+		"Name": "None",
+		"Id": "6"
+	}, {
+		"Name": "All",
+		"Id": "0"
+	}, {
+		"Name": "Brick",
+		"Id": "4"
+	}, {
+		"Name": "Lumber",
+		"Id": "1"
+	}],
+	"Landscapes": [{
+		"Name": "",
+		"Id": "0"
+	}, {
+		"Name": "",
+		"Id": ""
+	}, {
+		"Name": "",
+		"Id": ""
+	}, {
+		"Name": "",
+		"Id": ""
+	}, {
+		"Name": "",
+		"Id": ""
+	}, {
+		"Name": "",
+		"Id": ""
+	}]
+}

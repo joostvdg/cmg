@@ -1,0 +1,238 @@
+{
+	"GameType": "Normal",
+	"Board": {
+		"a": [{
+			"Landscape": 1,
+			"Resource": 1,
+			"Number": {
+				"Name": "",
+				"Number": 3,
+				"Score": 55
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 3,
+			"Resource": 3,
+			"Number": {
+				"Name": "",
+				"Number": 4,
+				"Score": 83
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 1,
+			"Resource": 1,
+			"Number": {
+				"Name": "",
+				"Number": 6,
+				"Score": 139
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}],
+		"b": [{
+			"Landscape": 2,
+			"Resource": 2,
+			"Number": {
+				"Name": "",
+				"Number": 5,
+				"Score": 111
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 1,
+			"Resource": 1,
+			"Number": {
+				"Name": "",
+				"Number": 3,
+				"Score": 55
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 2,
+			"Resource": 2,
+			"Number": {
+				"Name": "",
+				"Number": 6,
+				"Score": 139
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 3,
+			"Resource": 3,
+			"Number": {
+				"Name": "",
+				"Number": 4,
+				"Score": 83
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}],
+		"c": [{
+			"Landscape": 1,
+			"Resource": 1,
+			"Number": {
+				"Name": "",
+				"Number": 10,
+				"Score": 83
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 4,
+			"Resource": 4,
+			"Number": {
+				"Name": "",
+				"Number": 8,
+				"Score": 139
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 0,
+			"Resource": 6,
+			"Number": {
+				"Name": "",
+				"Number": 0,
+				"Score": 0
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 4,
+			"Resource": 4,
+			"Number": {
+				"Name": "",
+				"Number": 9,
+				"Score": 111
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 3,
+			"Resource": 3,
+			"Number": {
+				"Name": "",
+				"Number": 2,
+				"Score": 27
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}],
+		"d": [{
+			"Landscape": 5,
+			"Resource": 5,
+			"Number": {
+				"Name": "",
+				"Number": 9,
+				"Score": 111
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 5,
+			"Resource": 5,
+			"Number": {
+				"Name": "",
+				"Number": 5,
+				"Score": 111
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 2,
+			"Resource": 2,
+			"Number": {
+				"Name": "",
+				"Number": 8,
+				"Score": 139
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 5,
+			"Resource": 5,
+			"Number": {
+				"Name": "",
+				"Number": 11,
+				"Score": 55
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}],
+		"e": [{
+			"Landscape": 3,
+			"Resource": 3,
+			"Number": {
+				"Name": "",
+				"Number": 10,
+				"Score": 83
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 2,
+			"Resource": 2,
+			"Number": {
+				"Name": "",
+				"Number": 12,
+				"Score": 27
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}, {
+			"Landscape": 4,
+			"Resource": 4,
+			"Number": {
+				"Name": "",
+				"Number": 11,
+				"Score": 55
+			},
+			"Harbor": {
+				"Name": "",
+				"Resource": 0
+			}
+		}]
+	}
+}

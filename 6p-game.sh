@@ -1,1 +1,1 @@
-go run main.go mapgen --gameType 1 --max 359 --min 161 --minResource 40 --max300 20
+go run main.go mapgen --gameType 1 --max 365 --min 156 --minResource 65 --max300 22
