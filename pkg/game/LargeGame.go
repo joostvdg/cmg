@@ -90,7 +90,7 @@ func generateHarborLayoutLarge() [][]string {
 // Will create a board layout as shown below.
 func CreateLargeGame() GameType {
 	game := GameType{
-		Name:          "Normal",
+		Name:          "Large",
 		TilesCount:    30,
 		DesertCount:   2,
 		ForestCount:   6,
