@@ -68,7 +68,7 @@ func GetMap(c echo.Context) error {
 		}
 	}
 	var content = model.Map{
-		GameType: "Normal",
+		GameType: gameType.Name,
 		Board:    board.Board,
 	}
 
