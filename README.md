@@ -24,9 +24,21 @@ See the wrapper project [github.com/joostvdg/cmg-gcf](https://github.com/joostvd
     * linux `sudo snap install --classic heroku`
     * [download installer](https://cli-assets.heroku.com/heroku-x64.exe) for windows
 * create app with Heroku: `heroku create`
-* install govendor `go get -u github.com/kardianos/govendor`
-* add `vendor` directory to `.gitignore` file
-* init govendor `govendor init`
-    * need to make sure you're in a directory explicitly in the `GOPATH`, symlinks don't work...
-* fetch local files for govendor:  `govendor fetch +local`
+* configure go.mod file (see below)
 * publish to Heroku app: `git push heroku master`
+
+### Go.mod
+
+When using Go 1.11+, just use `gomod` for managing deps, don't use the others tools unless you have a good reason.
+
+When using `gomod`, you have to add some annotations for Heroku to your `go.mod` file.
+Docs state it defaults to building `.`, it seemed it was `./cmd/.` which was not correct for me.
+
+Probably best to state it explicitly.
+
+```bash
+// +heroku goVersion go1.11
+// +heroku install .
+```
+
+For more info, [read Heroku's docs on Go](https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-go).
