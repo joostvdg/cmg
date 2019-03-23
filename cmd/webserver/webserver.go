@@ -17,8 +17,8 @@ func StartWebserver() {
 
 	// Routes
 	e.GET("/", hello)
-	e.GET("/api/jsonp/map", webserver.GetMap)
-	e.GET("/api/jsonp/legend", webserver.GetMapLegend)
+	e.GET("/api/map", webserver.GetMap)
+	e.GET("/api/legend", webserver.GetMapLegend)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))

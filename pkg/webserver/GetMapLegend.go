@@ -10,6 +10,8 @@ import (
 
 func GetMapLegend(c echo.Context) error {
 	callback := c.QueryParam("callback")
+	jsonp := c.QueryParam("jsonp")
+
 	harbors := make([]model.ResourceIdentity, 7)
 	harbors[0] = model.ResourceIdentity{Name: "Grain", Id: fmt.Sprintf("%v", boardModel.Grain)}
 	harbors[1] = model.ResourceIdentity{Name: "Wool", Id: fmt.Sprintf("%v", boardModel.Wool)}
@@ -33,5 +35,8 @@ func GetMapLegend(c echo.Context) error {
 		Landscapes: landscapes,
 	}
 
-	return c.JSONP(http.StatusOK, callback, &content)
+	if jsonp == "true" {
+		return c.JSONP(http.StatusOK, callback, &content)
+	}
+	return c.JSON(http.StatusOK, &content)
 }
