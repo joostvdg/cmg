@@ -1,5 +1,8 @@
 module github.com/joostvdg/cmg
 
+// +heroku goVersion go1.11
+// +heroku install .
+
 require (
 	github.com/Bowery/prompt v0.0.0-20180817134258-8a1d5376df1c // indirect
 	github.com/dchest/safefile v0.0.0-20151022103144-855e8d98f185 // indirect
