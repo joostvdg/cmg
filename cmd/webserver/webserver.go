@@ -5,11 +5,20 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
+	"os"
 )
 
 func StartWebserver() {
+	port, ok := os.LookupEnv("PORT")
+
+	if !ok {
+		port = "8080"
+	}
+
+
 	// Echo instance
 	e := echo.New()
+	e.Logger.Printf("Starting server on port %s\n", port)
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -21,7 +30,7 @@ func StartWebserver() {
 	e.GET("/api/legend", webserver.GetMapLegend)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":"+port))
 }
 
 // Handler
