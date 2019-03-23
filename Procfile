@@ -1,1 +1,1 @@
-web: serve
+web: cmg serve
