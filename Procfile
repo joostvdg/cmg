@@ -1,1 +1,1 @@
-web: catan-map-generator serve
+web: cmg serve
