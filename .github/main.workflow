@@ -6,6 +6,9 @@ workflow "GitHub Release" {
 action "Build" {
   uses = "joostvdg/actions/golang-build@master"
   args = "linux/amd64 darwin/amd64 windows/amd64"
+  env = {
+    GO111MODULE = "on"
+  }
 }
 
 action "Release Mac" {
@@ -15,6 +18,7 @@ action "Release Mac" {
   env = {
     GOOS = "darwin"
     GOARCH = "amd64"
+    GO111MODULE = "on"
   }
 }
 
@@ -25,6 +29,7 @@ action "Release Windows" {
   env = {
     GOOS = "windows"
     GOARCH = "amd64"
+    GO111MODULE = "on"
   }
 }
 
