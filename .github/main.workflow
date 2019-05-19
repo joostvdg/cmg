@@ -4,7 +4,7 @@ workflow "GitHub Release" {
 }
 
 action "Build" {
-  uses = "sosedoff/actions/golang-build@master"
+  uses = "joostvdg/actions/golang-build@master"
   args = "linux/amd64 darwin/amd64 windows/amd64"
 }
 
