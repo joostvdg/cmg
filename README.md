@@ -8,17 +8,25 @@ Little tool for generating Catan maps which are fair.
 [![license](https://img.shields.io/github/license/joostvdg/cmg.svg)]()
 [![Go Report Card](https://goreportcard.com/badge/joostvdg/cmg)](https://goreportcard.com/report/github.com/joostvdg/cmg)
 
-## Jenkins X
+## Live version
+
+The application is running as a free heroku app to try: [https://catan-map-generator.herokuapp.com/api/map](https://catan-map-generator.herokuapp.com/api/map).
+
+Look for the Code to see the API for for more commands (or the shell scripts such as `6p-game.sh`).
+
+The UI is available at [https://catanmap.herokuapp.com/](https://catanmap.herokuapp.com/).
+
+## Run on Jenkins X
 
 ```
 jx import
 ```
 
-## Google Cloud Function
+## Run as Google Cloud Function
 
 See the wrapper project [github.com/joostvdg/cmg-gcf](https://github.com/joostvdg/cmg-gcf) for running it as a Cloud Function.
 
-## Heroku
+## Run on Heroku
 
 * get Heroku CLI: `brew tap heroku/brew && brew install heroku` 
     * linux `sudo snap install --classic heroku`
