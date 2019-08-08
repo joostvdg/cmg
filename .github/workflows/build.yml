@@ -1,0 +1,10 @@
+name: Build
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: check go version
+      - run: go version
