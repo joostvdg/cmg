@@ -69,7 +69,7 @@ func (b *Board) validateResourceScores(rules GameRules, verbose bool) bool {
 			log.WithFields(log.Fields{
 				"resourceId": resourceId,
 				"avgScore":   avgScore,
-			}).Warn("Invalid scoring for resource:")
+			}).Debug("Invalid scoring for resource:")
 			isValid = false
 		}
 	}
@@ -90,7 +90,7 @@ func (b *Board) validateAdjacentTiles(rules GameRules, verbose bool) bool {
 			log.WithFields(log.Fields{
 				"tileGroup": tileGroupSet,
 				"weight":    weightTotal,
-			}).Info("Validating Tile Group:")
+			}).Debug("Validating Tile Group:")
 		}
 		if !valid {
 			return false
@@ -115,7 +115,7 @@ func (b *Board) validateAdjectTileGroup(max int, min int, tileCodeA string, tile
 			"Score":       weightTotal,
 			"Max allowed": max,
 			"Min allowed": min,
-		}).Warn("Invalid tile group")
+		}).Debug("Invalid tile group")
 		return false, weightTotal
 	}
 	return true, weightTotal

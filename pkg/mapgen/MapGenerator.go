@@ -2,6 +2,7 @@ package mapgen
 
 import (
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
@@ -34,9 +35,11 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 		totalGenerations++
 		for !board.IsValid(rules, gameType, verbose) {
 			if totalGenerations > maxGenerationAttempts {
+				sentry.CaptureMessage(fmt.Sprintf("Could not generate map of type %v, tried %v times", gameType, totalGenerations))
+				sentry.Flush(time.Second * 5)
 				log.Fatal("Can not generate a map... (1000+ runs)")
 			}
-			log.Info(fmt.Sprintf("Loop %v::%v", i, failedGenerations))
+			log.Debug(fmt.Sprintf("Loop %v::%v", i, failedGenerations))
 			totalGenerations++
 			failedGenerations++
 			board = MapGenerationAttempt(gameType, verbose)
@@ -46,12 +49,12 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 	log.WithFields(log.Fields{
 		"Map Generation Loops":    numberOfLoops,
 		"Map Generation Failures": failedGenerations,
-	}).Info("Finished generation loop:")
+	}).Debug("Finished generation loop:")
 }
 
 func MapGenerationAttempt(gameType game.GameType, verbose bool) game.Board {
 
-	log.Info("Generating new Map")
+	log.Debug("Generating new Map")
 	tiles := generateTiles(gameType)
 	distributeNumbers(gameType, tiles)
 	if verbose {
@@ -72,7 +75,7 @@ func MapGenerationAttempt(gameType game.GameType, verbose bool) game.Board {
 		GameType: gameType,
 		Harbors:  harborMap,
 	}
-	log.Info("Created a new board")
+	log.Debug("Created a new board")
 	return *board
 }
 
@@ -103,7 +106,7 @@ func addTilesOfType(number int, landscape model.LandscapeCode, resource model.Re
 func distributeNumbers(game game.GameType, tileSet []*model.Tile) {
 	numbersAllocated := make([]int, 0, game.TilesCount-game.DesertCount)
 	randomRange := (game.TilesCount - game.DesertCount) // desert tile doesn't get a number
-	log.Info("Allocating numbers to Tiles")
+	log.Debug("Allocating numbers to Tiles")
 	for i := 0; i < game.TilesCount; i++ {
 		if tileSet[i].Landscape == model.Desert {
 			continue
@@ -131,8 +134,8 @@ func distributeTiles(gameType game.GameType, tileSet []*model.Tile, verbose bool
 		}
 		tilesOnBoard[gridLane] = tilesLine
 		if verbose {
-			log.Info("Current Tiles Allocated: ", len(numbersAllocated), " / 19")
-			log.Info("Tiles Allocated: ", numbersAllocated)
+			log.Debug("Current Tiles Allocated: ", len(numbersAllocated), " / 19")
+			log.Debug("Tiles Allocated: ", numbersAllocated)
 		}
 	}
 	return tilesOnBoard
