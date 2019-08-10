@@ -7,6 +7,7 @@ Little tool for generating Catan maps which are fair.
 [![GitHub release](https://img.shields.io/github/release/joostvdg/cmg.svg)]()
 [![license](https://img.shields.io/github/license/joostvdg/cmg.svg)]()
 [![Go Report Card](https://goreportcard.com/badge/joostvdg/cmg)](https://goreportcard.com/report/github.com/joostvdg/cmg)
+[![DepShield Badge](https://depshield.sonatype.org/badges/joostvdg/cmg/depshield.svg)](https://depshield.github.io)
 
 ## Live version
 
