@@ -12,9 +12,9 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kardianos/govendor v1.0.9 // indirect
-	github.com/labstack/echo/v4 v4.0.0
-	github.com/labstack/gommon v0.2.8
-	github.com/sirupsen/logrus v1.3.0
+	github.com/labstack/echo/v4 v4.1.8
+	github.com/labstack/gommon v0.2.9
+	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3 // indirect
 	go.opencensus.io v0.19.2
