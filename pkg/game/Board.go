@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Board the Catan game Board, contains the Tiles and how they are distributed on the Board
 type Board struct {
 	Tiles    []*model.Tile
 	Board    map[string][]*model.Tile
@@ -15,6 +16,7 @@ type Board struct {
 	Harbors  map[string]*model.Harbor
 }
 
+// IsValid wrapper function for encapsulating all the validations for the map
 func (b *Board) IsValid(rules GameRules, game GameType, verbose bool) bool {
 	return len(b.Tiles) == game.TilesCount &&
 		b.validateAdjacentTiles(rules, verbose) &&

@@ -11,6 +11,8 @@ const (
 	Mountain LandscapeCode = 5
 )
 
+// Landscape is the Catan landscape type, such as Forest, Mountains
+// Each has a name (for readability), and a code for compact data transfer/processing
 type Landscape struct {
 	Name string
 	Code LandscapeCode

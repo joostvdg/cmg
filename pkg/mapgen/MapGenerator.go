@@ -52,6 +52,8 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 	}).Debug("Finished generation loop:")
 }
 
+// MapGenerationAttempt attempts to generate a map for the specified game type
+// It is regarded as an attempt, as the randomization can produce maps that are not valid and thus discarded
 func MapGenerationAttempt(gameType game.GameType, verbose bool) game.Board {
 
 	log.Debug("Generating new Map")

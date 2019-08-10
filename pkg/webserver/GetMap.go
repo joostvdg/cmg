@@ -27,6 +27,7 @@ func extractIntParamOrDefault(context echo.Context, paramName string, defaultVal
 	return intValue
 }
 
+// GetMap starts the Generation Cycle, which may or may not succeed with a valid map according to the supplied Game Rules
 func GetMap(c echo.Context) error {
 	callback := c.QueryParam("callback")
 	jsonp := c.QueryParam("jsonp")

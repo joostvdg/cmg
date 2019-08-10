@@ -20,7 +20,7 @@ const (
 	line11TemplateNormal string = "..........................\n"
 )
 
-// createNormalGame creates a Normal game for up to four players.
+// CreateNormalGame creates a Normal game for up to four players.
 // Will create a board layout as shown below.
 // Harbors: [c0], [a0, a1], [a2], [b3, c4], [d3, c4], [e2], [e0, e1]
 // 			c, a0, a1, a2, b3, d3, e2, e1,  e0

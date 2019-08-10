@@ -9,6 +9,8 @@ var LargeGame = CreateLargeGame()
 
 type PrintBoardToConsole func(b *Board)
 
+// GameType the information for the type of game
+// Should be exhaustive and will be expanded for supporting alternative game types such as Seafarers
 type GameType struct {
 	Name               string
 	TilesCount         int

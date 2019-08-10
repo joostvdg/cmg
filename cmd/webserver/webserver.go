@@ -10,6 +10,9 @@ import (
 	"os"
 )
 
+// StartWebserver starts the Echo webserver
+// Retrieves environment variable PORT for the server port to listen on
+// Retrieves environment variable SENTRY_DSN for exporting Sentry.io events
 func StartWebserver() {
 	port, ok := os.LookupEnv("PORT")
 

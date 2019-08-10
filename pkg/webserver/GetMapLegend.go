@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// GetMapLegend retrieves the map Legend, helps explain codes used within the data returned by the API
 func GetMapLegend(c echo.Context) error {
 	callback := c.QueryParam("callback")
 	jsonp := c.QueryParam("jsonp")

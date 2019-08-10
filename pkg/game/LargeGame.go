@@ -86,7 +86,7 @@ func generateHarborLayoutLarge() [][]string {
 	}
 }
 
-// createLargeGame creates a Large game for up to four players.
+// CreateLargeGame creates a Large game for up to four players.
 // Will create a board layout as shown below.
 func CreateLargeGame() GameType {
 	game := GameType{

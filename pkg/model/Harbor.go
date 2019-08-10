@@ -12,6 +12,7 @@ const (
 	None   Resource = 6 // Desert
 )
 
+// Harbor is a Catan harbor, consisting out of a simple name, and the resource it has the trade benefit for
 type Harbor struct {
 	Name     string
 	Resource Resource
