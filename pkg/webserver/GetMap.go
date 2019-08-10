@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
+	"github.com/google/uuid"
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/mapgen"
 	"github.com/joostvdg/cmg/pkg/webserver/model"
 	"github.com/labstack/echo/v4"
-	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
@@ -16,7 +16,7 @@ import (
 )
 
 func extractIntParamOrDefault(context echo.Context, paramName string, defaultValue int) int {
-	paramValue :=  context.QueryParam(paramName)
+	paramValue := context.QueryParam(paramName)
 	if len(paramValue) <= 0 {
 		return defaultValue
 	}
@@ -65,10 +65,10 @@ func GetMap(c echo.Context) error {
 	totalGenerations := 0
 
 	log.WithFields(log.Fields{
-		"GameRules": rules,
-		"UUID": uuid,
+		"GameRules":  rules,
+		"UUID":       uuid,
 		"RequestURI": c.Request().RequestURI,
-		"HOST": c.Request().Host,
+		"HOST":       c.Request().Host,
 		"RemoteAddr": c.Request().RemoteAddr,
 	}).Info("Attempt to generate a fair map:")
 
@@ -90,7 +90,7 @@ func GetMap(c echo.Context) error {
 	t := time.Now()
 	elapsed := t.Sub(start)
 	log.WithFields(log.Fields{
-		"UUID": uuid,
+		"UUID":     uuid,
 		"Duration": elapsed,
 	}).Info("Created a new map")
 
@@ -104,7 +104,7 @@ func abortingMapGeneration(ctx echo.Context, rules game.GameRules, gameType stri
 	if hub := sentryecho.GetHubFromContext(ctx); hub != nil {
 		hub.WithScope(func(scope *sentry.Scope) {
 			scope.SetExtra("GameRules", rules)
-			scope.SetExtra("RequestURI", ctx.Request().RequestURI )
+			scope.SetExtra("RequestURI", ctx.Request().RequestURI)
 			hub.CaptureMessage(fmt.Sprintf("Could not generate map of type %v, tried %v times", gameType, totalGenerations))
 			hub.Flush(time.Second * 5)
 		})
@@ -120,5 +120,3 @@ func abortingMapGeneration(ctx echo.Context, rules game.GameRules, gameType stri
 	}
 	return ctx.JSON(http.StatusLoopDetected, &content)
 }
-
-

@@ -158,7 +158,6 @@ func CreateLargeGame() GameType {
 	return game
 }
 
-
 const (
 	//                          a    b    c    d    e
 	// a: [3], b: [4], c: [5], d: [4], e: [3]
@@ -175,7 +174,7 @@ const (
 	line00TemplateLarge string = "...................H%v..................\n"             //a- b- c- d- e- f- g-
 	line01TemplateLarge string = "................../%v\\.H%v..............\n"            //a- b- c- d0 e- f- g-
 	line02TemplateLarge string = "............../%v\\\\.%v//%v\\.............\n"          //a- b- c0 d0 e0 f- g-
-	line03TemplateLarge string = ".......H%v./%v\\\\.%v//%v\\\\%v//%v\\.H%v.......\n"    //a- b0 c0 d1 e0 f0 g-
+	line03TemplateLarge string = ".......H%v./%v\\\\.%v//%v\\\\%v//%v\\.H%v.......\n"     //a- b0 c0 d1 e0 f0 g-
 	line04TemplateLarge string = "....../%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.....\n"    //a0 b0 c1 d1 e1 f0 g0
 	line05TemplateLarge string = "......\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.....\n"   //a0 b1 c1 d2 e1 f1 g0
 	line06TemplateLarge string = "...H%v./%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.H%v..\n"  //a1 b1 c2 d2 e2 f1 g1
@@ -183,7 +182,7 @@ const (
 	line08TemplateLarge string = "....../%v\\\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\.....\n"    //a2 b2 c3 d3 e3 f2 g2
 	line09TemplateLarge string = "...H%v.\\.%v//%v\\\\.%v//%v\\\\.%v//%v\\\\.%v/.H%v..\n" //a2 b3 c3 d4 e3 f3 g2
 	line10TemplateLarge string = "..........\\.%v//%v\\\\.%v//%v\\\\.%v/.........\n"      //a- b3 c4 d4 e4 f3 g-
-	line11TemplateLarge string = "..............\\.%v//%v\\\\.%v/.H%v..........\n"         //a- b- c4 d5 e4 f- g-
+	line11TemplateLarge string = "..............\\.%v//%v\\\\.%v/.H%v..........\n"        //a- b- c4 d5 e4 f- g-
 	line12TemplateLarge string = "..............H%v.\\.%v/.H%v...............\n"          //a- b- c- d5 e- f- g-
 	line13TemplateLarge string = ".......................................\n"              //a- b- c- d- e- f- g-
 )

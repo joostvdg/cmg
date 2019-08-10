@@ -2,10 +2,10 @@ package webserver
 
 import (
 	"github.com/getsentry/sentry-go"
+	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/joostvdg/cmg/pkg/webserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	sentryecho "github.com/getsentry/sentry-go/echo"
 	"net/http"
 	"os"
 )
@@ -42,7 +42,7 @@ func StartWebserver() {
 	e.GET("/api/legend", webserver.GetMapLegend)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":"+port))
+	e.Logger.Fatal(e.Start(":" + port))
 }
 
 // Handler
