@@ -1,8 +1,10 @@
 package game
 
 import (
+	"errors"
 	"fmt"
 	"github.com/joostvdg/cmg/pkg/model"
+	"github.com/prometheus/common/log"
 )
 
 const (
@@ -63,6 +65,7 @@ func CreateNormalGame() GameType {
 		HarborLayout:  generateHarborLayoutNormal(),
 		ToConsole:     printNormalGameToConsole,
 	}
+
 	game.AdjacentTileGroups = [][]string{
 		{"0aw", "1aw", "1bw"},
 		{"0aw", "0bw", "1bw"},
@@ -98,6 +101,146 @@ func CreateNormalGame() GameType {
 	return game
 }
 
+// InflateNormalGameFromCode inflates a normal game from code
+func InflateNormalGameFromCode(code string) (Board, error) {
+	gameLayout := generateNormalGameLayout()
+	var boardMap map[string][]*model.Tile
+	boardMap = make(map[string][]*model.Tile)
+
+	codeIndex := 0
+	for column, numberOfTiles := range gameLayout {
+		tiles := make([]*model.Tile, numberOfTiles, numberOfTiles)
+		for i := 0; i < numberOfTiles; i++ {
+			landscapeCode := code[codeIndex : codeIndex+1]
+			landscape, errLandscape := GetLandscapeForCode(landscapeCode)
+			if errLandscape != nil {
+				log.Warn(fmt.Sprintf("Inflation error: %v", errLandscape))
+				return Board{}, errLandscape
+			}
+			resource, errResource := GetResourceForCode(landscapeCode)
+			if errResource != nil {
+				log.Warn(fmt.Sprintf("Inflation error: %v", errLandscape))
+				return Board{}, errResource
+			}
+
+			numberCode := code[codeIndex+1 : codeIndex+2]
+			number, errNumber := GetNumberForCode(numberCode)
+			if errNumber != nil {
+				log.Warn(fmt.Sprintf("Inflation error: %v", errNumber))
+				return Board{}, errNumber
+			}
+
+			harborCode := code[codeIndex+2 : codeIndex+3]
+			harbor, errHarbor := GetHarborForCode(harborCode)
+			if errHarbor != nil {
+				log.Warn(fmt.Sprintf("Inflation error: %v", errHarbor))
+				return Board{}, errHarbor
+			}
+			codeIndex += 3
+
+			tile := model.Tile{
+				Landscape: landscape,
+				Resource:  resource,
+				Harbor:    harbor,
+				Number:    number,
+			}
+			tiles[i] = &tile
+		}
+		boardMap[column] = tiles
+	}
+
+	board := Board{
+		Board: boardMap,
+	}
+	return board, nil
+}
+
+func GetNumberForCode(code string) (model.Number, error) {
+	switch code {
+	case "a":
+		return model.Number{Number: 2, Score: 27, Code: "a"}, nil
+	case "b":
+		return model.Number{Number: 3, Score: 55, Code: "b"}, nil
+	case "c":
+		return model.Number{Number: 4, Score: 83, Code: "c"}, nil
+	case "d":
+		return model.Number{Number: 5, Score: 111, Code: "d"}, nil
+	case "e":
+		return model.Number{Number: 6, Score: 139, Code: "e"}, nil
+	case "f":
+		return model.Number{Number: 8, Score: 139, Code: "f"}, nil
+	case "g":
+		return model.Number{Number: 9, Score: 111, Code: "g"}, nil
+	case "h":
+		return model.Number{Number: 10, Score: 83, Code: "h"}, nil
+	case "i":
+		return model.Number{Number: 11, Score: 55, Code: "i"}, nil
+	case "j":
+		return model.Number{Number: 12, Score: 27, Code: "j"}, nil
+	case "z":
+		return model.Number{Number: 0, Score: 9, Code: "z"}, nil
+	}
+	return model.Number{Number: 2, Score: 27, Code: "a"}, errors.New(fmt.Sprintf("invalid code for number: %v", code))
+}
+
+func GetHarborForCode(code string) (model.Harbor, error) {
+	switch code {
+	case "0":
+		return model.Harbor{Resource: model.All}, nil
+	case "1":
+		return model.Harbor{Resource: model.Lumber}, nil
+	case "2":
+		return model.Harbor{Resource: model.Wool}, nil
+	case "3":
+		return model.Harbor{Resource: model.Grain}, nil
+	case "4":
+		return model.Harbor{Resource: model.Brick}, nil
+	case "5":
+		return model.Harbor{Resource: model.Ore}, nil
+	case "6":
+		return model.Harbor{Resource: model.None}, nil
+	}
+	return model.Harbor{Resource: model.None}, errors.New(fmt.Sprintf("invalid code for harbor: %v", code))
+}
+
+func GetResourceForCode(code string) (model.Resource, error) {
+	switch code {
+	case "0":
+		return model.All, nil
+	case "1":
+		return model.Lumber, nil
+	case "2":
+		return model.Wool, nil
+	case "3":
+		return model.Grain, nil
+	case "4":
+		return model.Brick, nil
+	case "5":
+		return model.Ore, nil
+	case "6":
+		return model.None, nil
+	}
+	return model.None, errors.New(fmt.Sprintf("invalid code for resource: %v", code))
+}
+
+func GetLandscapeForCode(code string) (model.LandscapeCode, error) {
+	switch code {
+	case "0":
+		return model.Desert, nil
+	case "1":
+		return model.Forest, nil
+	case "2":
+		return model.Pasture, nil
+	case "3":
+		return model.Field, nil
+	case "4":
+		return model.River, nil
+	case "5":
+		return model.Mountain, nil
+	}
+	return model.Desert, errors.New(fmt.Sprintf("invalid code for landscape: %v", code))
+}
+
 func generateNormalGameLayout() map[string]int {
 	var boardLayout map[string]int
 	boardLayout = make(map[string]int)
@@ -126,41 +269,51 @@ func generateHarborSetNormal(numberOfHarbors int) []*model.Harbor {
 
 // generateHarborPositionsNormal creates the matrix of the harbors positions
 func generateHarborLayoutNormal() [][]string {
+
+	//{"c0"},
+	//{"a0", "b0"},
+	//{"a1", "a0"},
+	//{"a2"},
+	//{"b3", "c4"},
+	//{"d3", "c4"},
+	//{"e2"},
+	//{"e1", "e0"},
+	//{"e0", "d0"},
+
 	return [][]string{
 		{"c0"},
-		{"a0", "b0"},
-		{"a1", "a0"},
+		{"a0"},
+		{"a1"},
 		{"a2"},
-		{"b3", "c4"},
-		{"d3", "c4"},
+		{"b3"},
+		{"d3"},
 		{"e2"},
-		{"e1", "e0"},
-		{"e0", "d0"},
+		{"e1"},
+		{"e0"},
 	}
 }
 
 func generateNumberSetNormal(numberOfTiles int) []*model.Number {
 	numbers := make([]*model.Number, 0, numberOfTiles-1)
 
-	numbers = append(numbers, &model.Number{Number: 2, Score: 27})
-	numbers = append(numbers, &model.Number{Number: 3, Score: 55})
-	numbers = append(numbers, &model.Number{Number: 3, Score: 55})
-	numbers = append(numbers, &model.Number{Number: 4, Score: 83})
-	numbers = append(numbers, &model.Number{Number: 4, Score: 83})
-	numbers = append(numbers, &model.Number{Number: 5, Score: 111})
-	numbers = append(numbers, &model.Number{Number: 5, Score: 111})
-	numbers = append(numbers, &model.Number{Number: 6, Score: 139})
-	numbers = append(numbers, &model.Number{Number: 6, Score: 139})
-	numbers = append(numbers, &model.Number{Number: 8, Score: 139})
-	numbers = append(numbers, &model.Number{Number: 8, Score: 139})
-	numbers = append(numbers, &model.Number{Number: 9, Score: 111})
-	numbers = append(numbers, &model.Number{Number: 9, Score: 111})
-	numbers = append(numbers, &model.Number{Number: 10, Score: 83})
-	numbers = append(numbers, &model.Number{Number: 10, Score: 83})
-	numbers = append(numbers, &model.Number{Number: 11, Score: 55})
-	numbers = append(numbers, &model.Number{Number: 11, Score: 55})
-	numbers = append(numbers, &model.Number{Number: 12, Score: 27})
-
+	numbers = append(numbers, &model.Number{Number: 2, Score: 27, Code: "a"})
+	numbers = append(numbers, &model.Number{Number: 3, Score: 55, Code: "b"})
+	numbers = append(numbers, &model.Number{Number: 3, Score: 55, Code: "b"})
+	numbers = append(numbers, &model.Number{Number: 4, Score: 83, Code: "c"})
+	numbers = append(numbers, &model.Number{Number: 4, Score: 83, Code: "c"})
+	numbers = append(numbers, &model.Number{Number: 5, Score: 111, Code: "d"})
+	numbers = append(numbers, &model.Number{Number: 5, Score: 111, Code: "d"})
+	numbers = append(numbers, &model.Number{Number: 6, Score: 139, Code: "e"})
+	numbers = append(numbers, &model.Number{Number: 6, Score: 139, Code: "e"})
+	numbers = append(numbers, &model.Number{Number: 8, Score: 139, Code: "f"})
+	numbers = append(numbers, &model.Number{Number: 8, Score: 139, Code: "f"})
+	numbers = append(numbers, &model.Number{Number: 9, Score: 111, Code: "g"})
+	numbers = append(numbers, &model.Number{Number: 9, Score: 111, Code: "g"})
+	numbers = append(numbers, &model.Number{Number: 10, Score: 83, Code: "h"})
+	numbers = append(numbers, &model.Number{Number: 10, Score: 83, Code: "h"})
+	numbers = append(numbers, &model.Number{Number: 11, Score: 55, Code: "i"})
+	numbers = append(numbers, &model.Number{Number: 11, Score: 55, Code: "i"})
+	numbers = append(numbers, &model.Number{Number: 12, Score: 27, Code: "j"})
 	return numbers
 }
 

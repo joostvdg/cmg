@@ -5,4 +5,5 @@ package model
 type Number struct {
 	Number int
 	Score  int
+	Code   string
 }

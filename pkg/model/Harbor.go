@@ -17,3 +17,7 @@ type Harbor struct {
 	Name     string
 	Resource Resource
 }
+
+func (harbor *Harbor) Code() string {
+	return string(harbor.Resource)
+}

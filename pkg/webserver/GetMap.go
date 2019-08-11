@@ -83,9 +83,11 @@ func GetMap(c echo.Context) error {
 			board = mapgen.MapGenerationAttempt(gameType, verbose)
 		}
 	}
+
 	var content = model.Map{
 		GameType: gameType.Name,
 		Board:    board.Board,
+		GameCode: board.GetGameCode(),
 	}
 
 	t := time.Now()
@@ -111,10 +113,12 @@ func abortingMapGeneration(ctx echo.Context, rules game.GameRules, gameType stri
 		})
 	}
 
-	log.Warnf("Can not generate a map even after %v tries, perhaps try less strict requirements?", totalGenerations)
+	message := fmt.Sprintf("Can not generate a map even after %v tries, perhaps try less strict requirements?", totalGenerations)
+	log.Warn(message)
 	var content = model.Map{
 		GameType: gameType,
 		Board:    nil,
+		Error:    message,
 	}
 	if jsonp == "true" {
 		return ctx.JSONP(http.StatusLoopDetected, callback, &content)

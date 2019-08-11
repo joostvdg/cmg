@@ -14,6 +14,7 @@ require (
 	github.com/kardianos/govendor v1.0.9 // indirect
 	github.com/labstack/echo/v4 v4.1.8
 	github.com/labstack/gommon v0.2.9
+	github.com/prometheus/common v0.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3 // indirect

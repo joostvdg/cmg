@@ -14,6 +14,7 @@ type Board struct {
 	Board    map[string][]*model.Tile
 	GameType GameType
 	Harbors  map[string]*model.Harbor
+	GameCode string
 }
 
 // IsValid wrapper function for encapsulating all the validations for the map
@@ -181,4 +182,20 @@ func (board *Board) element(code string) string {
 		return ""
 	}
 
+}
+
+func (board *Board) GetGameCode() string {
+	if board.GameCode == "" {
+		code := ""
+		for _, tiles := range board.Board {
+			for _, tile := range tiles {
+				code += fmt.Sprintf("%v", tile.Landscape)
+				code += tile.Number.Code
+				code += fmt.Sprintf("%v", tile.Harbor.Resource)
+			}
+		}
+
+		board.GameCode = code
+	}
+	return board.GameCode
 }

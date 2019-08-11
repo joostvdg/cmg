@@ -7,6 +7,7 @@ import (
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -70,6 +71,7 @@ func MapGenerationAttempt(gameType game.GameType, verbose bool) game.Board {
 	}
 	boardMap := distributeTiles(gameType, tiles, verbose)
 	harborMap := distributeHarbors(gameType)
+	updateTilesWithHarbors(boardMap, harborMap)
 
 	board := &game.Board{
 		Tiles:    tiles,
@@ -79,6 +81,16 @@ func MapGenerationAttempt(gameType game.GameType, verbose bool) game.Board {
 	}
 	log.Debug("Created a new board")
 	return *board
+}
+
+func updateTilesWithHarbors(tiles map[string][]*model.Tile, harbors map[string]*model.Harbor) {
+	for location, harbor := range harbors {
+		column := location[0:1]
+		indexString := location[1:2]
+		index, _ := strconv.Atoi(indexString)
+		tile := tiles[column][index]
+		tile.Harbor = *harbor
+	}
 }
 
 func generateTiles(gameType game.GameType) []*model.Tile {
@@ -99,6 +111,7 @@ func addTilesOfType(number int, landscape model.LandscapeCode, resource model.Re
 		tile := model.Tile{
 			Landscape: landscape,
 			Resource:  resource,
+			Harbor:    model.Harbor{Resource: model.None, Name: ""},
 		}
 		tiles[i] = &tile
 	}
@@ -111,6 +124,7 @@ func distributeNumbers(game game.GameType, tileSet []*model.Tile) {
 	log.Debug("Allocating numbers to Tiles")
 	for i := 0; i < game.TilesCount; i++ {
 		if tileSet[i].Landscape == model.Desert {
+			tileSet[i].Number = model.Number{Number: 0, Score: 0, Code: "z"}
 			continue
 		}
 		drawnNumber := drawTileNumber(randomRange, numbersAllocated)
