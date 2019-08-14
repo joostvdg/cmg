@@ -3,7 +3,8 @@ on: [push]
 
 jobs:
   build:
+    name: test go version
     runs-on: ubuntu-latest
     steps:
       - name: check go version
-      - run: go version
+        run: go version
