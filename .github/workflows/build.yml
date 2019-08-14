@@ -3,8 +3,40 @@ on: [push]
 
 jobs:
   build:
-    name: test go version
+    name: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - name: check go version
         run: go version
+      - name: get dependency
+        run: go get -t -v ./...
+      - name: gofmt
+        run: gofmt -s -w -l **/*.go
+      - name: build
+        run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o cmg.sh
+
+  sync-heroku:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: repo-sync
+      uses: wei/git-sync@master
+      env:
+        SOURCE_REPO: "git@github.com:joostvdg/cmg.git"
+        SOURCE_BRANCH: "master"
+        DESTINATION_REPO: "git@heroku.com:catan-map-generator.git"
+        DESTINATION_BRANCH: "master"
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      with:
+        args: $SOURCE_REPO $SOURCE_BRANCH $DESTINATION_REPO $DESTINATION_BRANCH
+# https://github.com/marketplace/actions/git-sync-action
+#   deploy:
+#     name: deploy
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@master
+#       - name: git add remote
+#         run: git remote add heroku https://git.heroku.com/catan-map-generator.git
+#       - name: push
+#         run: git push heroku master --force
