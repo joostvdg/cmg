@@ -194,7 +194,6 @@ func (board *Board) GetGameCode() string {
 				code += fmt.Sprintf("%v", tile.Harbor.Resource)
 			}
 		}
-
 		board.GameCode = code
 	}
 	return board.GameCode

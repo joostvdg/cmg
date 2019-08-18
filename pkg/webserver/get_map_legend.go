@@ -24,12 +24,11 @@ func GetMapLegend(c echo.Context) error {
 
 	landscapes := make([]model.ResourceIdentity, 6)
 	landscapes[0] = model.ResourceIdentity{Name: "Desert", Id: fmt.Sprintf("%v", boardModel.Desert)}
-	landscapes[0] = model.ResourceIdentity{Name: "Forest", Id: fmt.Sprintf("%v", boardModel.Forest)}
-	landscapes[0] = model.ResourceIdentity{Name: "Pasture", Id: fmt.Sprintf("%v", boardModel.Pasture)}
-	landscapes[0] = model.ResourceIdentity{Name: "Field", Id: fmt.Sprintf("%v", boardModel.Field)}
-	landscapes[0] = model.ResourceIdentity{Name: "River", Id: fmt.Sprintf("%v", boardModel.River)}
-	landscapes[0] = model.ResourceIdentity{Name: "Mountain", Id: fmt.Sprintf("%v", boardModel.Mountain)}
-	landscapes[0] = model.ResourceIdentity{Name: "", Id: fmt.Sprintf("%v", boardModel.Desert)}
+	landscapes[1] = model.ResourceIdentity{Name: "Forest", Id: fmt.Sprintf("%v", boardModel.Forest)}
+	landscapes[2] = model.ResourceIdentity{Name: "Pasture", Id: fmt.Sprintf("%v", boardModel.Pasture)}
+	landscapes[3] = model.ResourceIdentity{Name: "Field", Id: fmt.Sprintf("%v", boardModel.Field)}
+	landscapes[4] = model.ResourceIdentity{Name: "River", Id: fmt.Sprintf("%v", boardModel.River)}
+	landscapes[5] = model.ResourceIdentity{Name: "Mountain", Id: fmt.Sprintf("%v", boardModel.Mountain)}
 
 	var content = model.MapLegend{
 		Harbors:    harbors,
