@@ -18,11 +18,11 @@ func GetMapByCode(ctx echo.Context) error {
 	code := ctx.Param("code")
 	callback := ctx.QueryParam("callback")
 	jsonp := ctx.QueryParam("jsonp")
-	uuid, _ := uuid.NewUUID()
+	requestUuid, _ := uuid.NewUUID()
 	start := time.Now()
 
 	log.WithFields(log.Fields{
-		"UUID":       uuid,
+		"UUID":       requestUuid,
 		"Code":       code,
 		"RequestURI": ctx.Request().RequestURI,
 		"HOST":       ctx.Request().Host,
@@ -31,6 +31,7 @@ func GetMapByCode(ctx echo.Context) error {
 
 	gameType := game.NormalGame
 
+	// TODO: have a map with game types
 	var board = game.Board{}
 	switch len(code) {
 	case 57:
@@ -57,7 +58,7 @@ func GetMapByCode(ctx echo.Context) error {
 	t := time.Now()
 	elapsed := t.Sub(start)
 	log.WithFields(log.Fields{
-		"UUID":     uuid,
+		"UUID":     requestUuid,
 		"Duration": elapsed,
 	}).Info("Created a new map")
 
