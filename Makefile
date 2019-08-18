@@ -20,7 +20,10 @@ build:
 	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME) $(MAIN_GO)
 
 test: 
-	CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS) -test.v
+	CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS) -test.v -coverprofile cp.out
+
+coverage:
+    gopherbadger -md="README.md"
 
 full: $(PKGS)
 
@@ -28,8 +31,7 @@ install:
 	GOBIN=${GOPATH}/bin $(GO) install -ldflags $(BUILDFLAGS) $(MAIN_GO)
 
 fmt:
-	@FORMATTED=`$(GO) fmt $(PACKAGE_DIRS)`
-	@([[ ! -z "$(FORMATTED)" ]] && printf "Fixed unformatted files:\n$(FORMATTED)") || true
+	@gofmt -s -w -l **/*.go
 
 clean:
 	rm -rf build release
