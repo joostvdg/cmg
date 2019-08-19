@@ -11,12 +11,11 @@ import (
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/webserver/model"
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetNormalMap(t *testing.T) {
-	log.SetLevel(log.DebugLevel)
+	//log.SetLevel(log.DebugLevel)
 	targetPath := "/api/map"
 
 	e := echo.New()

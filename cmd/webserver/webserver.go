@@ -42,6 +42,7 @@ func StartWebserver() {
 	// Routes
 	e.GET("/", hello)
 	e.GET("/api/map", webserver.GetMap)
+	e.GET("/api/map/code", webserver.GetMapCode)
 	e.GET("/api/map/code/:code", webserver.GetMapByCode)
 	e.GET("/api/legend", webserver.GetMapLegend)
 

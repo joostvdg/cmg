@@ -1,10 +1,8 @@
 package game
 
 import (
-	"errors"
 	"fmt"
 	"github.com/joostvdg/cmg/pkg/model"
-	"github.com/prometheus/common/log"
 )
 
 const (
@@ -104,53 +102,7 @@ func CreateNormalGame() GameType {
 // InflateNormalGameFromCode inflates a normal game from code
 func InflateNormalGameFromCode(code string) (Board, error) {
 	gameLayout := generateNormalGameLayout()
-	var boardMap map[string][]*model.Tile
-	boardMap = make(map[string][]*model.Tile)
-
-	codeIndex := 0
-	for column, numberOfTiles := range gameLayout {
-		tiles := make([]*model.Tile, numberOfTiles, numberOfTiles)
-		for i := 0; i < numberOfTiles; i++ {
-
-			landscapeCode := code[codeIndex : codeIndex+1]
-			landscape := model.Landscapes[landscapeCode]
-			if landscape.Name == "" {
-				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Landscape", landscapeCode)
-				log.Warn(errorMessage)
-				return Board{}, errors.New(errorMessage)
-			}
-
-			numberCode := code[codeIndex+1 : codeIndex+2]
-			number := model.Numbers[numberCode]
-			if number.Score == 0 {
-				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Number", numberCode)
-				log.Warn(errorMessage)
-				return Board{}, errors.New(errorMessage)
-			}
-
-			harborCode := code[codeIndex+2 : codeIndex+3]
-			harbor := model.Harbors[harborCode]
-			if harbor.Name == "" {
-				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Harbor", harborCode)
-				log.Warn(errorMessage)
-				return Board{}, errors.New(errorMessage)
-			}
-			codeIndex += 3
-
-			tile := model.Tile{
-				Landscape: landscape,
-				Harbor:    harbor,
-				Number:    number,
-			}
-			tiles[i] = &tile
-		}
-		boardMap[column] = tiles
-	}
-
-	board := Board{
-		Board: boardMap,
-	}
-	return board, nil
+	return inflateGameFromCode(code, gameLayout)
 }
 
 func generateNormalGameLayout() map[string]int {

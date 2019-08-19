@@ -32,8 +32,12 @@ func GetMapByCode(ctx echo.Context) error {
 	gameType := game.NormalGame
 
 	// TODO: have a map with game types
+	delimiter := false
 	var board = game.Board{}
 	switch len(code) {
+	case 62:
+		delimiter = true
+		fallthrough
 	case 57:
 		// normal game
 		gameType = game.NormalGame
@@ -42,9 +46,17 @@ func GetMapByCode(ctx echo.Context) error {
 			return invalidGameCode(ctx, "Invalid code value", code, jsonp, callback)
 		}
 		board = inflatedBoard
+	case 97:
+		delimiter = true
+		fallthrough
 	case 90:
 		// large game
 		gameType = game.LargeGame
+		inflatedBoard, err := game.InflateLargeGameFromCode(code)
+		if err != nil {
+			return invalidGameCode(ctx, "Invalid code value", code, jsonp, callback)
+		}
+		board = inflatedBoard
 	default:
 		return invalidGameCode(ctx, "Unrecognizable game code", code, jsonp, callback)
 	}
@@ -52,7 +64,7 @@ func GetMapByCode(ctx echo.Context) error {
 	var content = model.Map{
 		GameType: gameType.Name,
 		Board:    board.Board,
-		GameCode: code,
+		GameCode: board.GetGameCode(delimiter),
 	}
 
 	t := time.Now()

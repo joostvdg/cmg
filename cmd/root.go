@@ -21,12 +21,12 @@ var MaxOver300 int
 var GameType int
 
 func init() {
-	mapGenCmd.Flags().IntVar(&MaxScore, "max", 361, "Maximum Probability score of 3 adjacent tiles")
-	mapGenCmd.Flags().IntVar(&MinScore, "min", 165, "Minimum Probability score of 3 adjacent tiles")
-	mapGenCmd.Flags().IntVar(&MaxResourceScore, "maxResource", 130, "Maximum average Probability score for resources per tile")
-	mapGenCmd.Flags().IntVar(&MinResourceScore, "minResource", 30, "Minimum average Probability score for resources per tile")
+	mapGenCmd.Flags().IntVar(&MaxScore, "max", game.DefaultGameRulesNormal.MaximumScore, "Maximum Probability score of 3 adjacent tiles")
+	mapGenCmd.Flags().IntVar(&MinScore, "min", game.DefaultGameRulesNormal.MinimumScore, "Minimum Probability score of 3 adjacent tiles")
+	mapGenCmd.Flags().IntVar(&MaxResourceScore, "maxResource", game.DefaultGameRulesNormal.MaximumResourceScore, "Maximum average Probability score for resources per tile")
+	mapGenCmd.Flags().IntVar(&MinResourceScore, "minResource", game.DefaultGameRulesNormal.MinimumResourceScore, "Minimum average Probability score for resources per tile")
 	mapGenCmd.Flags().IntVar(&GameType, "gameType", 0, "GameType, 0 = normal, 1 = large (5or6 players)")
-	mapGenCmd.Flags().IntVar(&MaxOver300, "max300", 10, "Number times the probability score of 3 adjacent tiles can exceed 300")
+	mapGenCmd.Flags().IntVar(&MaxOver300, "max300", game.DefaultGameRulesNormal.MaxOver300, "Number times the probability score of 3 adjacent tiles can exceed 300")
 	mapGenCmd.Flags().IntVar(&GenCount, "count", 0, "Number of times to generate a map, only for loop")
 	mapGenCmd.Flags().BoolVar(&GenLoop, "loop", false, "Generate maps in a loop 'count' times, or just once")
 	mapGenCmd.Flags().BoolVar(&Verbose, "verbose", false, "Verbose logging")

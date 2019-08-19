@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -174,14 +175,23 @@ func (board *Board) element(code string) string {
 
 }
 
-func (board *Board) GetGameCode() string {
+func (board *Board) GetGameCode(delimiter bool) string {
 	if board.GameCode == "" {
 		code := ""
-		for _, tiles := range board.Board {
-			for _, tile := range tiles {
+
+		rows := make([]string, 0)
+		for row := range board.Board {
+			rows = append(rows, row)
+		}
+		sort.Strings(rows)
+		for _, rowKey := range rows {
+			for _, tile := range board.Board[rowKey] {
 				code += fmt.Sprintf("%v", tile.Landscape.Code)
 				code += tile.Number.Code
 				code += fmt.Sprintf("%v", tile.Harbor.Code)
+			}
+			if delimiter {
+				code += "_"
 			}
 		}
 		board.GameCode = code
