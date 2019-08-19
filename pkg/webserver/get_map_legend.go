@@ -2,10 +2,11 @@ package webserver
 
 import (
 	"fmt"
+	"net/http"
+
 	boardModel "github.com/joostvdg/cmg/pkg/model"
 	"github.com/joostvdg/cmg/pkg/webserver/model"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 // GetMapLegend retrieves the map Legend, helps explain codes used within the data returned by the API

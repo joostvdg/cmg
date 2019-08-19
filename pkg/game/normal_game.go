@@ -124,10 +124,11 @@ func InflateNormalGameFromCode(code string) (Board, error) {
 			}
 
 			numberCode := code[codeIndex+1 : codeIndex+2]
-			number, errNumber := GetNumberForCode(numberCode)
-			if errNumber != nil {
-				log.Warn(fmt.Sprintf("Inflation error: %v", errNumber))
-				return Board{}, errNumber
+			number := model.Numbers[numberCode]
+			if number.Score == 0 {
+				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Number", numberCode)
+				log.Warn(errorMessage)
+				return Board{}, errors.New(errorMessage)
 			}
 
 			harborCode := code[codeIndex+2 : codeIndex+3]
@@ -153,34 +154,6 @@ func InflateNormalGameFromCode(code string) (Board, error) {
 		Board: boardMap,
 	}
 	return board, nil
-}
-
-func GetNumberForCode(code string) (model.Number, error) {
-	switch code {
-	case "a":
-		return model.Number{Number: 2, Score: 27, Code: "a"}, nil
-	case "b":
-		return model.Number{Number: 3, Score: 55, Code: "b"}, nil
-	case "c":
-		return model.Number{Number: 4, Score: 83, Code: "c"}, nil
-	case "d":
-		return model.Number{Number: 5, Score: 111, Code: "d"}, nil
-	case "e":
-		return model.Number{Number: 6, Score: 139, Code: "e"}, nil
-	case "f":
-		return model.Number{Number: 8, Score: 139, Code: "f"}, nil
-	case "g":
-		return model.Number{Number: 9, Score: 111, Code: "g"}, nil
-	case "h":
-		return model.Number{Number: 10, Score: 83, Code: "h"}, nil
-	case "i":
-		return model.Number{Number: 11, Score: 55, Code: "i"}, nil
-	case "j":
-		return model.Number{Number: 12, Score: 27, Code: "j"}, nil
-	case "z":
-		return model.Number{Number: 0, Score: 9, Code: "z"}, nil
-	}
-	return model.Number{Number: 2, Score: 27, Code: "a"}, errors.New(fmt.Sprintf("invalid code for number: %v", code))
 }
 
 func GetHarborForCode(code string) (model.Harbor, error) {
@@ -296,24 +269,24 @@ func generateHarborLayoutNormal() [][]string {
 func generateNumberSetNormal(numberOfTiles int) []*model.Number {
 	numbers := make([]*model.Number, 0, numberOfTiles-1)
 
-	numbers = append(numbers, &model.Number{Number: 2, Score: 27, Code: "a"})
-	numbers = append(numbers, &model.Number{Number: 3, Score: 55, Code: "b"})
-	numbers = append(numbers, &model.Number{Number: 3, Score: 55, Code: "b"})
-	numbers = append(numbers, &model.Number{Number: 4, Score: 83, Code: "c"})
-	numbers = append(numbers, &model.Number{Number: 4, Score: 83, Code: "c"})
-	numbers = append(numbers, &model.Number{Number: 5, Score: 111, Code: "d"})
-	numbers = append(numbers, &model.Number{Number: 5, Score: 111, Code: "d"})
-	numbers = append(numbers, &model.Number{Number: 6, Score: 139, Code: "e"})
-	numbers = append(numbers, &model.Number{Number: 6, Score: 139, Code: "e"})
-	numbers = append(numbers, &model.Number{Number: 8, Score: 139, Code: "f"})
-	numbers = append(numbers, &model.Number{Number: 8, Score: 139, Code: "f"})
-	numbers = append(numbers, &model.Number{Number: 9, Score: 111, Code: "g"})
-	numbers = append(numbers, &model.Number{Number: 9, Score: 111, Code: "g"})
-	numbers = append(numbers, &model.Number{Number: 10, Score: 83, Code: "h"})
-	numbers = append(numbers, &model.Number{Number: 10, Score: 83, Code: "h"})
-	numbers = append(numbers, &model.Number{Number: 11, Score: 55, Code: "i"})
-	numbers = append(numbers, &model.Number{Number: 11, Score: 55, Code: "i"})
-	numbers = append(numbers, &model.Number{Number: 12, Score: 27, Code: "j"})
+	numbers = append(numbers, model.Number2)
+	numbers = append(numbers, model.Number3)
+	numbers = append(numbers, model.Number3)
+	numbers = append(numbers, model.Number4)
+	numbers = append(numbers, model.Number4)
+	numbers = append(numbers, model.Number5)
+	numbers = append(numbers, model.Number5)
+	numbers = append(numbers, model.Number6)
+	numbers = append(numbers, model.Number6)
+	numbers = append(numbers, model.Number8)
+	numbers = append(numbers, model.Number8)
+	numbers = append(numbers, model.Number9)
+	numbers = append(numbers, model.Number9)
+	numbers = append(numbers, model.Number10)
+	numbers = append(numbers, model.Number10)
+	numbers = append(numbers, model.Number11)
+	numbers = append(numbers, model.Number11)
+	numbers = append(numbers, model.Number12)
 	return numbers
 }
 
