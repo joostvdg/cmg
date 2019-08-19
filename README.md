@@ -4,6 +4,7 @@ Little tool for generating Catan maps which are fair.
 
 ## Badges
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0f9aa8d2206648ae863fd934c4fc5095)](https://app.codacy.com/app/joostvdg/cmg?utm_source=github.com&utm_medium=referral&utm_content=joostvdg/cmg&utm_campaign=Badge_Grade_Dashboard)
 [![GitHub release](https://img.shields.io/github/release/joostvdg/cmg.svg)]()
 [![license](https://img.shields.io/github/license/joostvdg/cmg.svg)]()
 [![Go Report Card](https://goreportcard.com/badge/joostvdg/cmg)](https://goreportcard.com/report/github.com/joostvdg/cmg)
