@@ -29,41 +29,31 @@ func (b *Board) validateResourceScores(rules GameRules, verbose bool) bool {
 	isValid := true
 	resourceCounts := make([]int, 6, 6)
 	resourceScores := make([]int, 6, 6)
-	resourceScores[model.Desert] = 0
-	resourceScores[model.Forest] = 0
-	resourceScores[model.Pasture] = 0
-	resourceScores[model.Field] = 0
-	resourceScores[model.River] = 0
-	resourceScores[model.Mountain] = 0
-	resourceCounts[model.Desert] = 0
-	resourceCounts[model.Forest] = 0
-	resourceCounts[model.Pasture] = 0
-	resourceCounts[model.Field] = 0
-	resourceCounts[model.River] = 0
-	resourceCounts[model.Mountain] = 0
+
+	resourceScores[0] = 0
+	resourceCounts[0] = 0
+	resourceScores[1] = 0
+	resourceCounts[1] = 0
+	resourceScores[2] = 0
+	resourceCounts[2] = 0
+	resourceScores[3] = 0
+	resourceCounts[3] = 0
+	resourceScores[4] = 0
+	resourceCounts[4] = 0
+	resourceScores[5] = 0
+	resourceCounts[5] = 0
 
 	for _, tile := range b.Tiles {
-		switch tile.Landscape {
-		case model.Forest:
-			resourceScores[model.Forest] = resourceScores[model.Forest] + tile.Number.Score
-			resourceCounts[model.Forest] = resourceCounts[model.Forest] + 1
-		case model.Pasture:
-			resourceScores[model.Pasture] = resourceScores[model.Pasture] + tile.Number.Score
-			resourceCounts[model.Pasture] = resourceCounts[model.Pasture] + 1
-		case model.Field:
-			resourceScores[model.Field] = resourceScores[model.Field] + tile.Number.Score
-			resourceCounts[model.Field] = resourceCounts[model.Field] + 1
-		case model.River:
-			resourceScores[model.River] = resourceScores[model.River] + tile.Number.Score
-			resourceCounts[model.River] = resourceCounts[model.River] + 1
-		case model.Mountain:
-			resourceScores[model.Mountain] = resourceScores[model.Mountain] + tile.Number.Score
-			resourceCounts[model.Mountain] = resourceCounts[model.Mountain] + 1
-		}
+		codeInt, _ := strconv.Atoi(tile.Landscape.Code)
+		codeInt-- // we don't use the All resource, which is 0
+		resourceScores[codeInt] = resourceScores[codeInt] + tile.Number.Score
+		resourceCounts[codeInt] = resourceCounts[codeInt] + 1
 	}
 
 	for resourceId, score := range resourceScores {
-		if resourceId == 0 {
+		skipDesertId, _ := strconv.Atoi(model.None.Code)
+		skipDesertId-- // because we did the same in the resource scores/counts
+		if resourceId == skipDesertId {
 			// skip Desert tiles
 			continue
 		}
@@ -149,7 +139,7 @@ func sameResource(tileCode string, harborResource model.Resource, board map[stri
 	runeCode := []rune(tileCode)
 	column := string(runeCode[0:1])
 	row, _ := strconv.Atoi(string(runeCode[1:2]))
-	if board[column][row].Resource == harborResource {
+	if board[column][row].Landscape.Resource == harborResource {
 		return true
 	}
 
@@ -189,9 +179,9 @@ func (board *Board) GetGameCode() string {
 		code := ""
 		for _, tiles := range board.Board {
 			for _, tile := range tiles {
-				code += fmt.Sprintf("%v", tile.Landscape)
+				code += fmt.Sprintf("%v", tile.Landscape.Code)
 				code += tile.Number.Code
-				code += fmt.Sprintf("%v", tile.Harbor.Resource)
+				code += fmt.Sprintf("%v", tile.Harbor.Code)
 			}
 		}
 		board.GameCode = code

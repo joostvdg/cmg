@@ -84,6 +84,12 @@ func GetMap(c echo.Context) error {
 		}
 	}
 
+	for _, tile := range board.Board {
+		log.WithFields(log.Fields{
+			"Tile": tile,
+		}).Debug("Final Board: ")
+	}
+
 	var content = model.Map{
 		GameType: gameType.Name,
 		Board:    board.Board,

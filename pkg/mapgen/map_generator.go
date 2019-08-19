@@ -94,25 +94,26 @@ func updateTilesWithHarbors(tiles map[string][]*model.Tile, harbors map[string]*
 }
 
 func generateTiles(gameType game.GameType) []*model.Tile {
-
 	tiles := make([]*model.Tile, 0, gameType.TilesCount)
-	tiles = append(tiles, addTilesOfType(gameType.DesertCount, model.Desert, model.None)...)
-	tiles = append(tiles, addTilesOfType(gameType.FieldCount, model.Field, model.Grain)...)
-	tiles = append(tiles, addTilesOfType(gameType.ForestCount, model.Forest, model.Lumber)...)
-	tiles = append(tiles, addTilesOfType(gameType.MountainCount, model.Mountain, model.Ore)...)
-	tiles = append(tiles, addTilesOfType(gameType.PastureCount, model.Pasture, model.Wool)...)
-	tiles = append(tiles, addTilesOfType(gameType.RiverCount, model.River, model.Brick)...)
+	tiles = append(tiles, addTilesOfType(gameType.DesertCount, *model.Desert)...)
+	tiles = append(tiles, addTilesOfType(gameType.FieldCount, *model.Field)...)
+	tiles = append(tiles, addTilesOfType(gameType.ForestCount, *model.Forest)...)
+	tiles = append(tiles, addTilesOfType(gameType.MountainCount, *model.Mountain)...)
+	tiles = append(tiles, addTilesOfType(gameType.PastureCount, *model.Pasture)...)
+	tiles = append(tiles, addTilesOfType(gameType.RiverCount, *model.Hill)...)
 	return tiles
 }
 
-func addTilesOfType(number int, landscape model.LandscapeCode, resource model.Resource) []*model.Tile {
-	tiles := make([]*model.Tile, number, number)
-	for i := 0; i < number; i++ {
+func addTilesOfType(numberOfTiles int, landscape model.Landscape) []*model.Tile {
+	tiles := make([]*model.Tile, numberOfTiles, numberOfTiles)
+	for i := 0; i < numberOfTiles; i++ {
 		tile := model.Tile{
 			Landscape: landscape,
-			Resource:  resource,
-			Harbor:    model.Harbor{Resource: model.None, Name: ""},
+			Harbor:    *model.HarborNone,
 		}
+		log.WithFields(log.Fields{
+			"Tile": tile,
+		}).Debug("Created new tile")
 		tiles[i] = &tile
 	}
 	return tiles
@@ -120,11 +121,11 @@ func addTilesOfType(number int, landscape model.LandscapeCode, resource model.Re
 
 func distributeNumbers(game game.GameType, tileSet []*model.Tile) {
 	numbersAllocated := make([]int, 0, game.TilesCount-game.DesertCount)
-	randomRange := (game.TilesCount - game.DesertCount) // desert tile doesn't get a number
+	randomRange := game.TilesCount - game.DesertCount // desert tile doesn't get a number
 	log.Debug("Allocating numbers to Tiles")
 	for i := 0; i < game.TilesCount; i++ {
-		if tileSet[i].Landscape == model.Desert {
-			tileSet[i].Number = model.Number{Number: 0, Score: 0, Code: "z"}
+		if tileSet[i].Landscape == *model.Desert {
+			tileSet[i].Number = *model.NumberEmpty
 			continue
 		}
 		drawnNumber := drawTileNumber(randomRange, numbersAllocated)

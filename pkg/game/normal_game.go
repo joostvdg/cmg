@@ -111,16 +111,13 @@ func InflateNormalGameFromCode(code string) (Board, error) {
 	for column, numberOfTiles := range gameLayout {
 		tiles := make([]*model.Tile, numberOfTiles, numberOfTiles)
 		for i := 0; i < numberOfTiles; i++ {
+
 			landscapeCode := code[codeIndex : codeIndex+1]
-			landscape, errLandscape := GetLandscapeForCode(landscapeCode)
-			if errLandscape != nil {
-				log.Warn(fmt.Sprintf("Inflation error: %v", errLandscape))
-				return Board{}, errLandscape
-			}
-			resource, errResource := GetResourceForCode(landscapeCode)
-			if errResource != nil {
-				log.Warn(fmt.Sprintf("Inflation error: %v", errLandscape))
-				return Board{}, errResource
+			landscape := model.Landscapes[landscapeCode]
+			if landscape.Name == "" {
+				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Landscape", landscapeCode)
+				log.Warn(errorMessage)
+				return Board{}, errors.New(errorMessage)
 			}
 
 			numberCode := code[codeIndex+1 : codeIndex+2]
@@ -132,16 +129,16 @@ func InflateNormalGameFromCode(code string) (Board, error) {
 			}
 
 			harborCode := code[codeIndex+2 : codeIndex+3]
-			harbor, errHarbor := GetHarborForCode(harborCode)
-			if errHarbor != nil {
-				log.Warn(fmt.Sprintf("Inflation error: %v", errHarbor))
-				return Board{}, errHarbor
+			harbor := model.Harbors[harborCode]
+			if harbor.Name == "" {
+				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Harbor", harborCode)
+				log.Warn(errorMessage)
+				return Board{}, errors.New(errorMessage)
 			}
 			codeIndex += 3
 
 			tile := model.Tile{
 				Landscape: landscape,
-				Resource:  resource,
 				Harbor:    harbor,
 				Number:    number,
 			}
@@ -154,64 +151,6 @@ func InflateNormalGameFromCode(code string) (Board, error) {
 		Board: boardMap,
 	}
 	return board, nil
-}
-
-func GetHarborForCode(code string) (model.Harbor, error) {
-	switch code {
-	case "0":
-		return model.Harbor{Resource: model.All}, nil
-	case "1":
-		return model.Harbor{Resource: model.Lumber}, nil
-	case "2":
-		return model.Harbor{Resource: model.Wool}, nil
-	case "3":
-		return model.Harbor{Resource: model.Grain}, nil
-	case "4":
-		return model.Harbor{Resource: model.Brick}, nil
-	case "5":
-		return model.Harbor{Resource: model.Ore}, nil
-	case "6":
-		return model.Harbor{Resource: model.None}, nil
-	}
-	return model.Harbor{Resource: model.None}, errors.New(fmt.Sprintf("invalid code for harbor: %v", code))
-}
-
-func GetResourceForCode(code string) (model.Resource, error) {
-	switch code {
-	case "0":
-		return model.All, nil
-	case "1":
-		return model.Lumber, nil
-	case "2":
-		return model.Wool, nil
-	case "3":
-		return model.Grain, nil
-	case "4":
-		return model.Brick, nil
-	case "5":
-		return model.Ore, nil
-	case "6":
-		return model.None, nil
-	}
-	return model.None, errors.New(fmt.Sprintf("invalid code for resource: %v", code))
-}
-
-func GetLandscapeForCode(code string) (model.LandscapeCode, error) {
-	switch code {
-	case "0":
-		return model.Desert, nil
-	case "1":
-		return model.Forest, nil
-	case "2":
-		return model.Pasture, nil
-	case "3":
-		return model.Field, nil
-	case "4":
-		return model.River, nil
-	case "5":
-		return model.Mountain, nil
-	}
-	return model.Desert, errors.New(fmt.Sprintf("invalid code for landscape: %v", code))
 }
 
 func generateNormalGameLayout() map[string]int {
@@ -228,15 +167,15 @@ func generateNormalGameLayout() map[string]int {
 
 func generateHarborSetNormal(numberOfHarbors int) []*model.Harbor {
 	harbors := make([]*model.Harbor, 0, numberOfHarbors)
-	harbors = append(harbors, &model.Harbor{Name: "2:1 Grain", Resource: model.Grain})
-	harbors = append(harbors, &model.Harbor{Name: "2:1 Brick", Resource: model.Brick})
-	harbors = append(harbors, &model.Harbor{Name: "2:1 Ore", Resource: model.Ore})
-	harbors = append(harbors, &model.Harbor{Name: "2:1 Wool", Resource: model.Wool})
-	harbors = append(harbors, &model.Harbor{Name: "2:1 Lumber", Resource: model.Lumber})
-	harbors = append(harbors, &model.Harbor{Name: "3:1", Resource: model.All})
-	harbors = append(harbors, &model.Harbor{Name: "3:1", Resource: model.All})
-	harbors = append(harbors, &model.Harbor{Name: "3:1", Resource: model.All})
-	harbors = append(harbors, &model.Harbor{Name: "3:1", Resource: model.All})
+	harbors = append(harbors, model.HarborGrain)
+	harbors = append(harbors, model.HarborBrick)
+	harbors = append(harbors, model.HarborOre)
+	harbors = append(harbors, model.HarborWool)
+	harbors = append(harbors, model.HarborLumber)
+	harbors = append(harbors, model.HarborAll)
+	harbors = append(harbors, model.HarborAll)
+	harbors = append(harbors, model.HarborAll)
+	harbors = append(harbors, model.HarborAll)
 	return harbors
 }
 
@@ -268,7 +207,6 @@ func generateHarborLayoutNormal() [][]string {
 
 func generateNumberSetNormal(numberOfTiles int) []*model.Number {
 	numbers := make([]*model.Number, 0, numberOfTiles-1)
-
 	numbers = append(numbers, model.Number2)
 	numbers = append(numbers, model.Number3)
 	numbers = append(numbers, model.Number3)
