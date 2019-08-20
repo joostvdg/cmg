@@ -1,6 +1,6 @@
 # Catan Map Generator (CMG)
 
-Little tool for generating Catan maps which are fair.
+App for generating Catan maps which are fair and balanced.
 
 ## Badges
 
