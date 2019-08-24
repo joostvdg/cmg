@@ -9,6 +9,7 @@ import (
 
 // GetMap starts the Generation Cycle, which may or may not succeed with a valid map according to the supplied Game Rules
 func GetMap(c echo.Context) error {
+
 	requestInfo := GetRequestInfoFromRequest(c)
 	rules := GetGameRulesFromRequest(c)
 

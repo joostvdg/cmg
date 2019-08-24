@@ -2,12 +2,13 @@ package game
 
 import (
 	"fmt"
-	"github.com/joostvdg/cmg/pkg/model"
-	log "github.com/sirupsen/logrus"
 	"sort"
 	"strconv"
-	"sync"
+	`sync`
 	"time"
+
+	"github.com/joostvdg/cmg/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 // Board the Catan game Board, contains the Tiles and how they are distributed on the Board
@@ -17,6 +18,7 @@ type Board struct {
 	GameType GameType
 	Harbors  map[string]*model.Harbor
 	GameCode string
+	WaitGroup sync.WaitGroup
 }
 
 // IsValid wrapper function for encapsulating all the validations for the map
@@ -26,18 +28,19 @@ func (b *Board) IsValid(rules GameRules, game GameType) bool {
 	start := time.Now()
 
 	isValid := true
-	var wg sync.WaitGroup
-	wg.Add(len(Validations))
+	log.Debug("Validating map")
 	for _, validationFunc := range Validations {
-		go func(board *Board, gameRules GameRules) {
-			valid := validationFunc(board, gameRules)
+		b.WaitGroup.Add(1)
+		go func(validation ValidateBoard) {
+			defer b.WaitGroup.Done()
+			valid := validation(b, rules)
 			if !valid {
 				isValid = false
 			}
-			wg.Done()
-		}(b, rules)
+		}(validationFunc)
 	}
-	wg.Wait()
+	log.Debug("Wait for validations to finish")
+	b.WaitGroup.Wait()
 
 	t := time.Now()
 	elapsed := t.Sub(start)
@@ -45,7 +48,8 @@ func (b *Board) IsValid(rules GameRules, game GameType) bool {
 		"Valid":       isValid,
 		"Validations": len(Validations),
 		"Duration":    elapsed,
-	}).Info("Validated map")
+		"Rules":       rules,
+	}).Debug("Validated map")
 	return isValid
 }
 
@@ -59,7 +63,7 @@ func (b *Board) validateAdjectTileGroup(max int, min int, tileCodeA string, tile
 			"Score":       weightTotal,
 			"Max allowed": max,
 			"Min allowed": min,
-		}).Debug("Invalid tile group")
+		}).Debug("  - Invalid tile group")
 		return false, weightTotal
 	}
 	return true, weightTotal

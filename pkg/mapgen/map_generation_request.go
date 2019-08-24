@@ -41,11 +41,10 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 		}
 	}
 
-	for _, tile := range board.Board {
-		log.WithFields(log.Fields{
-			"Tile": tile,
-		}).Debug("Final Board: ")
-	}
+	log.WithFields(log.Fields{
+		"NumberOfTiles": len(board.Tiles),
+		"Tiles": board.Tiles,
+	}).Debug("Final Board: ")
 
 	var content = model.Map{
 		GameType: gameType.Name,
