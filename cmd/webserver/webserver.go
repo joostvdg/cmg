@@ -28,8 +28,10 @@ const (
 	envSentry           = "SENTRY_DSN"
 	envDeploymentTarget = "DEPLOYMENT_TARGET"
 	envRolloutKey       = "ROLLOUT_APP"
+	envLogLevel         = "LOG_LEVEL"
 
 	defaultPort             = "8080"
+	debugLogLevel           = "DEBUG"
 	defaultDeploymentTarget = "LOCAL"
 	defaultLogFormatter     = "PLAIN"
 	jsonLogFormatter        = "JSON"
@@ -49,6 +51,11 @@ func StartWebserver() {
 		log.SetFormatter(&log.JSONFormatter{})
 	} else {
 		logFormat = defaultLogFormatter
+	}
+
+	logLevel, logLevelFormatOk := os.LookupEnv(envLogLevel)
+	if logLevelFormatOk && logLevel == debugLogLevel {
+		log.SetLevel(log.DebugLevel)
 	}
 
 	deploymentTarget, deploymentOk := os.LookupEnv(envDeploymentTarget)
@@ -82,6 +89,7 @@ func StartWebserver() {
 		"Rollout Enabled": rollOutOk,
 		"Sentry Enabled":  sentryOk,
 	}).Info("Webserver started")
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Rollout
 	options := roxServer.NewRoxOptions(roxServer.RoxOptionsBuilder{})
