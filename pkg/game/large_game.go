@@ -75,7 +75,7 @@ func generateHarborSetLarge(numberOfHarbors int) []*model.Harbor {
 }
 
 func generateHarborLayoutLarge() []string {
-	return []string{"d0","a0","a1","a2","c4","e4","f3","g2","g1","g0","e0"}
+	return []string{"d0", "a0", "a1", "a2", "c4", "e4", "f3", "g2", "g1", "g0", "e0"}
 }
 
 // CreateLargeGame creates a Large game for up to four players.

@@ -4,20 +4,21 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
-	`sync`
+	"sync"
 	"time"
 
 	"github.com/joostvdg/cmg/pkg/model"
+	"github.com/joostvdg/cmg/pkg/rollout"
 	log "github.com/sirupsen/logrus"
 )
 
 // Board the Catan game Board, contains the Tiles and how they are distributed on the Board
 type Board struct {
-	Tiles    []*model.Tile
-	Board    map[string][]*model.Tile
-	GameType GameType
-	Harbors  map[string]*model.Harbor
-	GameCode string
+	Tiles     []*model.Tile
+	Board     map[string][]*model.Tile
+	GameType  GameType
+	Harbors   map[string]*model.Harbor
+	GameCode  string
 	WaitGroup sync.WaitGroup
 }
 
@@ -29,7 +30,13 @@ func (b *Board) IsValid(rules GameRules, game GameType) bool {
 
 	isValid := true
 	log.Debug("Validating map")
-	for _, validationFunc := range Validations {
+
+	validationFunctions := Validations
+	if rollout.RoxContainer.EnableHarborValidation.IsEnabled(nil) {
+		validationFunctions = append(validationFunctions, ValidateHarbors)
+	}
+
+	for _, validationFunc := range validationFunctions {
 		b.WaitGroup.Add(1)
 		go func(validation ValidateBoard) {
 			defer b.WaitGroup.Done()

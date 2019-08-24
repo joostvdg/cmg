@@ -17,7 +17,6 @@ var (
 		ValidateResourceScores,
 		ValidateAdjacentTiles,
 		ValidateTilesNumbers,
-		ValidateHarbors,
 	}
 )
 
@@ -79,7 +78,7 @@ func ValidateResourceScores(board *Board, rules GameRules) bool {
 func ValidateAdjacentTiles(board *Board, rules GameRules) bool {
 
 	log.WithFields(log.Fields{
-		"number of tile groups": len(board.GameType.AdjacentTileGroups ),
+		"number of tile groups": len(board.GameType.AdjacentTileGroups),
 	}).Debug(" > ValidateAdjacentTiles start")
 
 	scoresOver300 := 0

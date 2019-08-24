@@ -3,6 +3,7 @@ package webserver
 import (
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
+	"github.com/joostvdg/cmg/pkg/rollout"
 	"github.com/joostvdg/cmg/pkg/webserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -12,15 +13,6 @@ import (
 	"os"
 	"runtime"
 )
-
-type Container struct {
-	EnableTutorial roxServer.RoxFlag
-}
-
-var rox *roxServer.Rox
-var container = &Container{
-	EnableTutorial: roxServer.NewRoxFlag(false),
-}
 
 const (
 	envPort             = "PORT"
@@ -94,10 +86,10 @@ func StartWebserver() {
 	// Rollout
 	options := roxServer.NewRoxOptions(roxServer.RoxOptionsBuilder{})
 
-	rox = roxServer.NewRox()
-	rox.Register("", container)
-	rox.SetCustomStringProperty("DEPLOYMENT_TARGET", deploymentTarget)
-	<-rox.Setup(rolloutKey, options)
+	rollout.Rox = roxServer.NewRox()
+	rollout.Rox.Register("", rollout.RoxContainer)
+	rollout.Rox.SetCustomStringProperty("DEPLOYMENT_TARGET", deploymentTarget)
+	<-rollout.Rox.Setup(rolloutKey, options)
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -106,7 +98,7 @@ func StartWebserver() {
 
 	// Routes
 	e.GET("/", hello)
-	e.GET("/rollout", rollout)
+	e.GET("/rollout", rolloutDemo)
 	e.GET("/api/map", webserver.GetMap)
 	e.GET("/api/map/code", webserver.GetMapCode)
 	e.GET("/api/map/code/:code", webserver.GetMapByCode)
@@ -121,9 +113,9 @@ func hello(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello, World!!")
 }
 
-func rollout(c echo.Context) error {
+func rolloutDemo(c echo.Context) error {
 	message := "Stay put"
-	if container.EnableTutorial.IsEnabled(nil) {
+	if rollout.RoxContainer.EnableTutorial.IsEnabled(nil) {
 		message = "Lets Rollout"
 	}
 	return c.String(http.StatusOK, message)
