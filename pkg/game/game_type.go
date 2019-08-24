@@ -21,10 +21,17 @@ type GameType struct {
 	RiverCount         int
 	MountainCount      int
 	HarborCount        int
-	AdjacentTileGroups [][]string
-	NumberSet          []*model.Number
-	HarborSet          []*model.Harbor
-	HarborLayout       []string
-	BoardLayout        map[string]int
-	ToConsole          PrintBoardToConsole
+	AdjacentTileGroups [][]*model.TileCode
+	//AdjacentTileGroups [][]string
+	NumberSet []*model.Number
+	HarborSet []*model.Harbor
+	//HarborLayout       []string
+	HarborLayout []*model.TileCode
+	BoardLayout  []int
+	//ToConsole          PrintBoardToConsole
+}
+
+// TC creates a TileCode via Column (named) and Row (indexed)
+func TC(c int, r int) *model.TileCode {
+	return &model.TileCode{Column: c, Row: r}
 }

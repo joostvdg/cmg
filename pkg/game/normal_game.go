@@ -1,24 +1,23 @@
 package game
 
 import (
-	"fmt"
 	"github.com/joostvdg/cmg/pkg/model"
 )
 
-const (
-	line00TemplateNormal string = "............H%v...........\n"
-	line01TemplateNormal string = ".........../%v\\...........\n"
-	line02TemplateNormal string = ".....H%v/%v\\\\.%v//%v\\H%v.....\n"
-	line03TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
-	line04TemplateNormal string = "...\\.%v//%v\\\\.%v//%v\\\\.%v/...\n"
-	line05TemplateNormal string = ".H%v/%v\\\\.%v//%v\\\\.%v//%v\\H%v.\n"
-	line06TemplateNormal string = "...\\.%v//%v\\\\.%v//%v/\\.%v/...\n"
-	line07TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
-	line08TemplateNormal string = ".H%v\\.%v//%v\\\\.%v//%v\\\\.%v/H%v.\n"
-	line09TemplateNormal string = ".......\\.%v//%v\\\\.%v/.......\n"
-	line10TemplateNormal string = "........H%v.\\.%v/.H%v........\n"
-	line11TemplateNormal string = "..........................\n"
-)
+//const (
+//	line00TemplateNormal string = "............H%v...........\n"
+//	line01TemplateNormal string = ".........../%v\\...........\n"
+//	line02TemplateNormal string = ".....H%v/%v\\\\.%v//%v\\H%v.....\n"
+//	line03TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
+//	line04TemplateNormal string = "...\\.%v//%v\\\\.%v//%v\\\\.%v/...\n"
+//	line05TemplateNormal string = ".H%v/%v\\\\.%v//%v\\\\.%v//%v\\H%v.\n"
+//	line06TemplateNormal string = "...\\.%v//%v\\\\.%v//%v/\\.%v/...\n"
+//	line07TemplateNormal string = ".../%v\\\\.%v//%v\\\\.%v//%v\\...\n"
+//	line08TemplateNormal string = ".H%v\\.%v//%v\\\\.%v//%v\\\\.%v/H%v.\n"
+//	line09TemplateNormal string = ".......\\.%v//%v\\\\.%v/.......\n"
+//	line10TemplateNormal string = "........H%v.\\.%v/.H%v........\n"
+//	line11TemplateNormal string = "..........................\n"
+//)
 
 // CreateNormalGame creates a Normal game for up to four players.
 // Will create a board layout as shown below.
@@ -46,7 +45,7 @@ const (
 // where cn < 5
 // where dn < 4
 // where en < 3
-func CreateNormalGame() GameType {
+func CreateNormalGame() *GameType {
 	game := GameType{
 		Name:          "Normal",
 		TilesCount:    19,
@@ -61,42 +60,74 @@ func CreateNormalGame() GameType {
 		HarborSet:     generateHarborSetNormal(9),
 		BoardLayout:   generateNormalGameLayout(),
 		HarborLayout:  generateHarborLayoutNormal(),
-		ToConsole:     printNormalGameToConsole,
+		//ToConsole:     printNormalGameToConsole,
 	}
 
-	game.AdjacentTileGroups = [][]string{
-		{"0aw", "1aw", "1bw"},
-		{"0aw", "0bw", "1bw"},
-		{"1aw", "0bw", "1bw"},
-		{"1aw", "2aw", "1bw"},
-		{"1aw", "1bw", "2bw"},
-		{"2aw", "2bw", "3bw"},
-		{"0bw", "0cw", "1cw"},
-		{"0bw", "1bw", "0cw"},
-		{"1bw", "1cw", "2cw"},
-		{"1bw", "2bw", "1cw"},
-		{"2bw", "2cw", "3cw"},
-		{"2bw", "3bw", "2cw"},
-		{"3bw", "3cw", "4cw"},
-		{"0cw", "1cw", "0dw"},
-		{"1cw", "2cw", "1dw"},
-		{"1cw", "0dw", "1dw"},
-		{"2cw", "3cw", "2dw"},
-		{"2cw", "2dw", "3dw"},
-		{"3cw", "4cw", "3dw"},
-		{"3cw", "2dw", "3dw"},
-		{"0dw", "0ew", "1ew"},
-		{"0dw", "1dw", "0ew"},
-		{"1dw", "2dw", "1ew"},
-		{"2dw", "1ew", "2ew"},
-		{"2dw", "3dw", "2ew"},
-		{"3dw", "2dw", "2ew"},
-		{"0ew", "1ew", "1dw"},
-		{"0ew", "0dw", "1dw"},
-		{"1ew", "2ew", "1dw"},
-		{"2ew", "3dw", "2dw"},
+	//game.AdjacentTileGroups = [][]string{
+	//	{"0aw", "1aw", "1bw"},
+	//	{"0aw", "0bw", "1bw"},
+	//	{"1aw", "0bw", "1bw"},
+	//	{"1aw", "2aw", "1bw"},
+	//	{"1aw", "1bw", "2bw"},
+	//	{"2aw", "2bw", "3bw"},
+	//	{"0bw", "0cw", "1cw"},
+	//	{"0bw", "1bw", "0cw"},
+	//	{"1bw", "1cw", "2cw"},
+	//	{"1bw", "2bw", "1cw"},
+	//	{"2bw", "2cw", "3cw"},
+	//	{"2bw", "3bw", "2cw"},
+	//	{"3bw", "3cw", "4cw"},
+	//	{"0cw", "1cw", "0dw"},
+	//	{"1cw", "2cw", "1dw"},
+	//	{"1cw", "0dw", "1dw"},
+	//	{"2cw", "3cw", "2dw"},
+	//	{"2cw", "2dw", "3dw"},
+	//	{"3cw", "4cw", "3dw"},
+	//	{"3cw", "2dw", "3dw"},
+	//	{"0dw", "0ew", "1ew"},
+	//	{"0dw", "1dw", "0ew"},
+	//	{"1dw", "2dw", "1ew"},
+	//	{"2dw", "1ew", "2ew"},
+	//	{"2dw", "3dw", "2ew"},
+	//	{"3dw", "2dw", "2ew"},
+	//	{"0ew", "1ew", "1dw"},
+	//	{"0ew", "0dw", "1dw"},
+	//	{"1ew", "2ew", "1dw"},
+	//	{"2ew", "3dw", "2dw"},
+	//}
+	game.AdjacentTileGroups = [][]*model.TileCode{
+		{TC(0, 0), TC(1, 0), TC(1, 1)},
+		{TC(0, 1), TC(1, 0), TC(1, 1)},
+		{TC(0, 1), TC(0, 0), TC(0, 1)},
+		{TC(0, 1), TC(1, 0), TC(1, 2)},
+		{TC(0, 2), TC(1, 0), TC(1, 3)},
+		{TC(1, 0), TC(2, 0), TC(2, 1)},
+		{TC(1, 0), TC(1, 0), TC(1, 0)},
+		{TC(1, 1), TC(2, 0), TC(2, 2)},
+		{TC(1, 1), TC(1, 0), TC(1, 1)},
+		{TC(1, 2), TC(2, 0), TC(2, 3)},
+		{TC(1, 2), TC(1, 0), TC(1, 2)},
+		{TC(1, 3), TC(2, 0), TC(2, 4)},
+		{TC(2, 0), TC(2, 0), TC(2, 0)},
+		{TC(2, 1), TC(2, 0), TC(2, 1)},
+		{TC(2, 1), TC(3, 0), TC(3, 1)},
+		{TC(2, 2), TC(2, 0), TC(2, 2)},
+		{TC(2, 2), TC(3, 0), TC(3, 3)},
+		{TC(2, 3), TC(2, 0), TC(2, 3)},
+		{TC(2, 3), TC(3, 0), TC(3, 3)},
+		{TC(3, 0), TC(4, 0), TC(4, 1)},
+		{TC(3, 0), TC(3, 0), TC(3, 0)},
+		{TC(3, 1), TC(3, 0), TC(3, 1)},
+		{TC(3, 2), TC(4, 0), TC(4, 2)},
+		{TC(3, 2), TC(3, 0), TC(3, 2)},
+		{TC(3, 3), TC(3, 0), TC(3, 2)},
+		{TC(4, 0), TC(4, 0), TC(4, 1)},
+		{TC(4, 0), TC(3, 0), TC(3, 1)},
+		{TC(4, 1), TC(4, 0), TC(4, 1)},
+		{TC(4, 2), TC(3, 0), TC(3, 2)},
 	}
-	return game
+
+	return &game
 }
 
 // InflateNormalGameFromCode inflates a normal game from code
@@ -105,16 +136,8 @@ func InflateNormalGameFromCode(code string) (Board, error) {
 	return inflateGameFromCode(code, gameLayout)
 }
 
-func generateNormalGameLayout() map[string]int {
-	var boardLayout map[string]int
-	boardLayout = make(map[string]int)
-	boardLayout["a"] = 3
-	boardLayout["b"] = 4
-	boardLayout["c"] = 5
-	boardLayout["d"] = 4
-	boardLayout["e"] = 3
-
-	return boardLayout
+func generateNormalGameLayout() []int {
+	return []int{3, 4, 5, 4, 3}
 }
 
 func generateHarborSetNormal(numberOfHarbors int) []*model.Harbor {
@@ -132,8 +155,18 @@ func generateHarborSetNormal(numberOfHarbors int) []*model.Harbor {
 }
 
 // generateHarborPositionsNormal creates the matrix of the harbors positions
-func generateHarborLayoutNormal() []string {
-	return []string{ "c0","a0","a1","a2","b3","d3","e2","e1","e0"}
+func generateHarborLayoutNormal() []*model.TileCode {
+	return []*model.TileCode{
+		TC(2, 0),
+		TC(0, 0),
+		TC(0, 1),
+		TC(0, 2),
+		TC(1, 3),
+		TC(3, 3),
+		TC(4, 2),
+		TC(4, 1),
+		TC(4, 0),
+	}
 }
 
 func generateNumberSetNormal(numberOfTiles int) []*model.Number {
@@ -159,64 +192,65 @@ func generateNumberSetNormal(numberOfTiles int) []*model.Number {
 	return numbers
 }
 
-func printNormalGameToConsole(b *Board) {
-
-	h := b.Harbors
-
-	// 5x10
-	fmt.Printf(fmt.Sprintf(line00TemplateNormal, h["c0"].Resource)) // 0
-	fmt.Printf(fmt.Sprintf(line01TemplateNormal, b.element("0cn"))) // 1 - 0cn
-	fmt.Printf(fmt.Sprintf(line02TemplateNormal,
-		h["a0,b0"].Resource,
-		b.element("0bn"), b.element("0cl"), b.element("0dn"),
-		h["e0,d0"].Resource)) // 2 - 0bn, 0cl, 0dn
-	fmt.Printf(fmt.Sprintf(line03TemplateNormal,
-		b.element("0an"),
-		b.element("0bl"),
-		b.element("1cn"),
-		b.element("0dl"),
-		b.element("0en"))) // 3 - 0an, 0bl, 1cn, 0dl, 0en
-	fmt.Printf(fmt.Sprintf(line04TemplateNormal,
-		b.element("0al"),
-		b.element("1bn"),
-		b.element("1cl"),
-		b.element("1dn"),
-		b.element("0el"))) // 4 - 0al, 1bn, 1cl, 1dn, 0el
-	fmt.Printf(fmt.Sprintf(line05TemplateNormal,
-		h["a1,a0"].Resource,
-		b.element("1an"),
-		b.element("1bl"),
-		b.element("2cn"),
-		b.element("1dl"),
-		b.element("1en"),
-		h["e1,e0"].Resource)) // 5 - 1an, 1bl, 2cn, 1dl, 1en
-	fmt.Printf(fmt.Sprintf(line06TemplateNormal,
-		b.element("1al"),
-		b.element("2bn"),
-		b.element("2cl"),
-		b.element("2dn"),
-		b.element("1el"))) // 6 - 1al, 2bn, 2cl, 2dn, 1el
-	fmt.Printf(fmt.Sprintf(line07TemplateNormal,
-		b.element("2an"),
-		b.element("2bl"),
-		b.element("3cn"),
-		b.element("2dl"),
-		b.element("2en"))) // 7 - 2an, 2bl, 3cn, 2dl, 2en
-	fmt.Printf(fmt.Sprintf(line08TemplateNormal,
-		h["a2"].Resource,
-		b.element("2al"),
-		b.element("3bn"),
-		b.element("3cl"),
-		b.element("3dn"),
-		b.element("2el"),
-		h["e2"].Resource)) // 8 - 2al, 3bn, 3cl, 3dn, 2el
-	fmt.Printf(fmt.Sprintf(line09TemplateNormal,
-		b.element("3bl"),
-		b.element("4cn"),
-		b.element("3dl"))) // 9 - 3bl, 4cn, 3dl
-	fmt.Printf(fmt.Sprintf(line10TemplateNormal,
-		h["b3,c4"].Resource,
-		b.element("4cl"),
-		h["d3,c4"].Resource)) // 10 - 4cl
-	fmt.Printf(line11TemplateNormal) // 11
-}
+//
+//func printNormalGameToConsole(b *Board) {
+//
+//	h := b.Harbors
+//
+//	// 5x10
+//	fmt.Printf(fmt.Sprintf(line00TemplateNormal, h["c0"].Resource)) // 0
+//	fmt.Printf(fmt.Sprintf(line01TemplateNormal, b.element("0cn"))) // 1 - 0cn
+//	fmt.Printf(fmt.Sprintf(line02TemplateNormal,
+//		h["a0,b0"].Resource,
+//		b.element("0bn"), b.element("0cl"), b.element("0dn"),
+//		h["e0,d0"].Resource)) // 2 - 0bn, 0cl, 0dn
+//	fmt.Printf(fmt.Sprintf(line03TemplateNormal,
+//		b.element("0an"),
+//		b.element("0bl"),
+//		b.element("1cn"),
+//		b.element("0dl"),
+//		b.element("0en"))) // 3 - 0an, 0bl, 1cn, 0dl, 0en
+//	fmt.Printf(fmt.Sprintf(line04TemplateNormal,
+//		b.element("0al"),
+//		b.element("1bn"),
+//		b.element("1cl"),
+//		b.element("1dn"),
+//		b.element("0el"))) // 4 - 0al, 1bn, 1cl, 1dn, 0el
+//	fmt.Printf(fmt.Sprintf(line05TemplateNormal,
+//		h["a1,a0"].Resource,
+//		b.element("1an"),
+//		b.element("1bl"),
+//		b.element("2cn"),
+//		b.element("1dl"),
+//		b.element("1en"),
+//		h["e1,e0"].Resource)) // 5 - 1an, 1bl, 2cn, 1dl, 1en
+//	fmt.Printf(fmt.Sprintf(line06TemplateNormal,
+//		b.element("1al"),
+//		b.element("2bn"),
+//		b.element("2cl"),
+//		b.element("2dn"),
+//		b.element("1el"))) // 6 - 1al, 2bn, 2cl, 2dn, 1el
+//	fmt.Printf(fmt.Sprintf(line07TemplateNormal,
+//		b.element("2an"),
+//		b.element("2bl"),
+//		b.element("3cn"),
+//		b.element("2dl"),
+//		b.element("2en"))) // 7 - 2an, 2bl, 3cn, 2dl, 2en
+//	fmt.Printf(fmt.Sprintf(line08TemplateNormal,
+//		h["a2"].Resource,
+//		b.element("2al"),
+//		b.element("3bn"),
+//		b.element("3cl"),
+//		b.element("3dn"),
+//		b.element("2el"),
+//		h["e2"].Resource)) // 8 - 2al, 3bn, 3cl, 3dn, 2el
+//	fmt.Printf(fmt.Sprintf(line09TemplateNormal,
+//		b.element("3bl"),
+//		b.element("4cn"),
+//		b.element("3dl"))) // 9 - 3bl, 4cn, 3dl
+//	fmt.Printf(fmt.Sprintf(line10TemplateNormal,
+//		h["b3,c4"].Resource,
+//		b.element("4cl"),
+//		h["d3,c4"].Resource)) // 10 - 4cl
+//	fmt.Printf(line11TemplateNormal) // 11
+//}

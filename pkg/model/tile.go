@@ -8,3 +8,10 @@ type Tile struct {
 	Number    Number
 	Harbor    Harbor
 }
+
+// TileCode is an identifier for the Tile withing a Board
+// Useful for creating mappings, such as for validating Adjacent Tiles
+type TileCode struct {
+	Column int
+	Row    int
+}

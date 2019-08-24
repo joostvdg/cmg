@@ -3,16 +3,15 @@ package game
 import (
 	"errors"
 	"fmt"
-	"sort"
 	"strings"
 
 	"github.com/joostvdg/cmg/pkg/model"
 	"github.com/prometheus/common/log"
 )
 
-func inflateGameFromCode(code string, gameLayout map[string]int) (Board, error) {
-	var boardMap map[string][]*model.Tile
-	boardMap = make(map[string][]*model.Tile)
+func inflateGameFromCode(code string, gameLayout []int) (Board, error) {
+	var boardMap [][]*model.Tile
+	boardMap = make([][]*model.Tile, 0)
 
 	// if we found a delimiter, and we happen to have exactly the number expected, we're probably good
 	if strings.Contains(code, DefaultGameRulesNormal.Delimiter) && strings.Count(code, DefaultGameRulesNormal.Delimiter) == len(gameLayout) {
@@ -20,15 +19,8 @@ func inflateGameFromCode(code string, gameLayout map[string]int) (Board, error) 
 	}
 
 	codeIndex := 0
-
-	columns := make([]string, 0)
-	for column := range gameLayout {
-		columns = append(columns, column)
-	}
-	sort.Strings(columns)
-
-	for _, column := range columns {
-		numberOfTiles := gameLayout[column]
+	for column, row := range gameLayout {
+		numberOfTiles := row
 		tiles := make([]*model.Tile, numberOfTiles, numberOfTiles)
 		for i := 0; i < numberOfTiles; i++ {
 

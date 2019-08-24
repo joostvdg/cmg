@@ -2,9 +2,8 @@ package game
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
-	`sync`
+	"sync"
 	"time"
 
 	"github.com/joostvdg/cmg/pkg/model"
@@ -13,16 +12,16 @@ import (
 
 // Board the Catan game Board, contains the Tiles and how they are distributed on the Board
 type Board struct {
-	Tiles    []*model.Tile
-	Board    map[string][]*model.Tile
-	GameType GameType
-	Harbors  map[string]*model.Harbor
-	GameCode string
+	Tiles     []*model.Tile
+	Board     [][]*model.Tile
+	GameType  *GameType
+	Harbors   []*model.Harbor
+	GameCode  string
 	WaitGroup sync.WaitGroup
 }
 
 // IsValid wrapper function for encapsulating all the validations for the map
-func (b *Board) IsValid(rules GameRules, game GameType) bool {
+func (b *Board) IsValid(rules *GameRules, game *GameType) bool {
 
 	// TODO parallelize via go routines
 	start := time.Now()
@@ -53,10 +52,10 @@ func (b *Board) IsValid(rules GameRules, game GameType) bool {
 	return isValid
 }
 
-func (b *Board) validateAdjectTileGroup(max int, min int, tileCodeA string, tileCodeB string, tileCodeC string) (bool, int) {
-	weightTileA, _ := strconv.Atoi(b.element(tileCodeA))
-	weightTileB, _ := strconv.Atoi(b.element(tileCodeB))
-	weightTileC, _ := strconv.Atoi(b.element(tileCodeC))
+func (b *Board) validateAdjacentTiles(max int, min int, tileCodeA *model.TileCode, tileCodeB *model.TileCode, tileCodeC *model.TileCode) (bool, int) {
+	weightTileA := b.tileResourceProbabilityScore(*tileCodeA)
+	weightTileB := b.tileResourceProbabilityScore(*tileCodeB)
+	weightTileC := b.tileResourceProbabilityScore(*tileCodeC)
 	weightTotal := weightTileA + weightTileB + weightTileC
 	if weightTotal > max || weightTotal < min {
 		log.WithFields(log.Fields{
@@ -69,28 +68,57 @@ func (b *Board) validateAdjectTileGroup(max int, min int, tileCodeA string, tile
 	return true, weightTotal
 }
 
-func sameResource(tileCode string, harborResource model.Resource, board map[string][]*model.Tile) bool {
-	if tileCode == "" {
-		return false
-	}
-	runeCode := []rune(tileCode)
-	column := string(runeCode[0:1])
-	row, _ := strconv.Atoi(string(runeCode[1:2]))
-	if board[column][row].Landscape.Resource == harborResource {
+//func (b *Board) validateAdjacentTiles2(max int, min int, tileCodeA string, tileCodeB string, tileCodeC string) (bool, int) {
+//	weightTileA, _ := strconv.Atoi(b.element(tileCodeA))
+//	weightTileB, _ := strconv.Atoi(b.element(tileCodeB))
+//	weightTileC, _ := strconv.Atoi(b.element(tileCodeC))
+//	weightTotal := weightTileA + weightTileB + weightTileC
+//	if weightTotal > max || weightTotal < min {
+//		log.WithFields(log.Fields{
+//			"Score":       weightTotal,
+//			"Max allowed": max,
+//			"Min allowed": min,
+//		}).Debug("  - Invalid tile group")
+//		return false, weightTotal
+//	}
+//	return true, weightTotal
+//}
+
+func sameResource(tileCode *model.TileCode, resource model.Resource, board [][]*model.Tile) bool {
+
+	if board[tileCode.Column][tileCode.Row].Landscape.Resource == resource {
 		return true
 	}
 
 	return false
 }
 
-func (b *Board) PrintToConsole() {
-	b.GameType.ToConsole(b)
+//func sameResource(tileCode string, resource model.Resource, board map[string][]*model.Tile) bool {
+//	if tileCode == "" {
+//		return false
+//	}
+//	runeCode := []rune(tileCode)
+//	column := string(runeCode[0:1])
+//	row, _ := strconv.Atoi(string(runeCode[1:2]))
+//	if board[column][row].Landscape.Resource == resource {
+//		return true
+//	}
+//
+//	return false
+//}
+
+//func (b *Board) PrintToConsole() {
+//	b.GameType.ToConsole(b)
+//}
+
+func (board *Board) tileResourceProbabilityScore(tileCode model.TileCode) int {
+	return board.Board[tileCode.Column][tileCode.Row].Number.Score
 }
 
 func (board *Board) element(code string) string {
 	runeCode := []rune(code)
 	row, _ := strconv.Atoi(string(runeCode[0:1]))
-	column := string(runeCode[1:2])
+	column, _ := strconv.Atoi(string(runeCode[1:2]))
 	elementType := string(runeCode[2:3])
 	switch elementType {
 	case "l":
@@ -115,13 +143,8 @@ func (board *Board) GetGameCode(delimiter bool) string {
 	if board.GameCode == "" {
 		code := ""
 
-		rows := make([]string, 0)
-		for row := range board.Board {
-			rows = append(rows, row)
-		}
-		sort.Strings(rows)
-		for _, rowKey := range rows {
-			for _, tile := range board.Board[rowKey] {
+		for _, row := range board.Board {
+			for _, tile := range row {
 				code += fmt.Sprintf("%v", tile.Landscape.Code)
 				code += tile.Number.Code
 				code += fmt.Sprintf("%v", tile.Harbor.Code)

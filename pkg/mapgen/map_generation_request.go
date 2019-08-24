@@ -30,20 +30,20 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 	numberOfLoops := 1
 	totalGenerations := 0
 
-	board := MapGenerationAttempt(gameType, verbose)
+	board, err := MapGenerationAttempt(gameType, verbose)
 	for i := 0; i < numberOfLoops; i++ {
-		for !board.IsValid(rules, gameType) {
+		for !board.IsValid(&rules, gameType) && err != nil {
 			totalGenerations++
 			if totalGenerations > rules.Generations {
 				return model.Map{}, errors.New("Stuck in generation loop")
 			}
-			board = MapGenerationAttempt(gameType, verbose)
+			board, err = MapGenerationAttempt(gameType, verbose)
 		}
 	}
 
 	log.WithFields(log.Fields{
 		"NumberOfTiles": len(board.Tiles),
-		"Tiles": board.Tiles,
+		"Tiles":         board.Tiles,
 	}).Debug("Final Board: ")
 
 	var content = model.Map{

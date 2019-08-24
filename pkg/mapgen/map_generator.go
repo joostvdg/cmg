@@ -2,13 +2,14 @@ package mapgen
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/getsentry/sentry-go"
+	"github.com/go-errors/errors"
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 type Game int
@@ -21,7 +22,7 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 		numberOfLoops = 1
 	}
 
-	var gameType game.GameType
+	var gameType *game.GameType
 	if rules.GameType == 0 {
 		gameType = game.NormalGame
 	} else if rules.GameType == 1 {
@@ -31,10 +32,10 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 
 	failedGenerations := 0
 	totalGenerations := 0
-	board := MapGenerationAttempt(gameType, verbose)
+	board, err := MapGenerationAttempt(gameType, verbose)
 	for i := 0; i < numberOfLoops; i++ {
 		totalGenerations++
-		for !board.IsValid(rules, gameType) {
+		for !board.IsValid(&rules, gameType) && err != nil {
 			if totalGenerations > maxGenerationAttempts {
 				sentry.CaptureMessage(fmt.Sprintf("Could not generate map of type %v, tried %v times", gameType, totalGenerations))
 				sentry.Flush(time.Second * 5)
@@ -43,9 +44,9 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 			log.Debug(fmt.Sprintf("Loop %v::%v", i, failedGenerations))
 			totalGenerations++
 			failedGenerations++
-			board = MapGenerationAttempt(gameType, verbose)
+			board, err = MapGenerationAttempt(gameType, verbose)
 		}
-		board.PrintToConsole()
+		//board.PrintToConsole()
 	}
 	log.WithFields(log.Fields{
 		"Map Generation Loops":    numberOfLoops,
@@ -55,45 +56,69 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 
 // MapGenerationAttempt attempts to generate a map for the specified game type
 // It is regarded as an attempt, as the randomization can produce maps that are not valid and thus discarded
-func MapGenerationAttempt(gameType game.GameType, verbose bool) game.Board {
-
+func MapGenerationAttempt(gameType *game.GameType, verbose bool) (game.Board, error) {
+	start := time.Now()
 	log.Debug("Generating new Map")
+
 	tiles := generateTiles(gameType)
-	distributeNumbers(gameType, tiles)
-	if verbose {
+	if log.IsLevelEnabled(log.DebugLevel) {
 		for _, tile := range tiles {
 			log.WithFields(log.Fields{
 				"Landscape": tile.Landscape,
 				"Number":    tile.Number,
 				"Harbor":    tile.Harbor,
-			}).Info("Tile:")
+			}).Debug(" - Tile:")
+		}
+	}
+	distributeNumbers(gameType, tiles)
+	if log.IsLevelEnabled(log.DebugLevel) {
+		for _, tile := range tiles {
+			log.WithFields(log.Fields{
+				"Landscape": tile.Landscape,
+				"Number":    tile.Number,
+				"Harbor":    tile.Harbor,
+			}).Debug(" - Tile:")
 		}
 	}
 	boardMap := distributeTiles(gameType, tiles, verbose)
-	harborMap := distributeHarbors(gameType)
-	updateTilesWithHarbors(boardMap, harborMap)
+	err := updateTilesWithHarbors(boardMap, gameType)
 
 	board := &game.Board{
 		Tiles:    tiles,
 		Board:    boardMap,
 		GameType: gameType,
-		Harbors:  harborMap,
 	}
-	log.Debug("Created a new board")
-	return *board
+	t := time.Now()
+	elapsed := t.Sub(start)
+	log.WithFields(log.Fields{
+		"Duration": elapsed,
+	}).Debug("Created a new board")
+
+	return *board, err
 }
 
-func updateTilesWithHarbors(tiles map[string][]*model.Tile, harbors map[string]*model.Harbor) {
-	for location, harbor := range harbors {
-		column := location[0:1]
-		indexString := location[1:2]
-		index, _ := strconv.Atoi(indexString)
-		tile := tiles[column][index]
-		tile.Harbor = *harbor
+func updateTilesWithHarbors(tiles [][]*model.Tile, gameType *game.GameType) error {
+	log.Debug("Allocating harbors to tiles")
+	randomRange := gameType.HarborCount
+	numbersAllocated := make([]int, 0, gameType.HarborCount)
+	for _, tileCode := range gameType.HarborLayout {
+		drawnNumber := drawTileNumber(randomRange, numbersAllocated)
+		harbor := gameType.HarborSet[drawnNumber]
+		tile := tiles[tileCode.Column][tileCode.Row]
+		for i := 0; i < 3; i++ {
+			if !(tile.Landscape.Resource == harbor.Resource) {
+				numbersAllocated = append(numbersAllocated, drawnNumber)
+				tile.Harbor = *harbor
+				continue
+			}
+		}
+		// shit, no suitable harbor
+		return errors.New("Could not assign a harbor of different type, map is invalid")
 	}
+	return nil
 }
 
-func generateTiles(gameType game.GameType) []*model.Tile {
+func generateTiles(gameType *game.GameType) []*model.Tile {
 	tiles := make([]*model.Tile, 0, gameType.TilesCount)
 	tiles = append(tiles, addTilesOfType(gameType.DesertCount, *model.Desert)...)
 	tiles = append(tiles, addTilesOfType(gameType.FieldCount, *model.Field)...)
@@ -113,17 +138,18 @@ func addTilesOfType(numberOfTiles int, landscape model.Landscape) []*model.Tile 
 		}
 		log.WithFields(log.Fields{
 			"Tile": tile,
-		}).Debug("Created new tile")
+		}).Debug(" - Created new tile")
 		tiles[i] = &tile
 	}
 	return tiles
 }
 
-func distributeNumbers(game game.GameType, tileSet []*model.Tile) {
+func distributeNumbers(game *game.GameType, tileSet []*model.Tile) {
 	numbersAllocated := make([]int, 0, game.TilesCount-game.DesertCount)
 	randomRange := game.TilesCount - game.DesertCount // desert tile doesn't get a number
-	log.Debug("Allocating numbers to Tiles")
+	log.Debug(" > Allocating numbers to Tiles")
 	for i := 0; i < game.TilesCount; i++ {
+		log.Debugf("  - Tile (%d/%d): %v", i +1, game.TilesCount, *tileSet[i])
 		if tileSet[i].Landscape == *model.Desert {
 			tileSet[i].Number = *model.NumberEmpty
 			continue
@@ -135,43 +161,33 @@ func distributeNumbers(game game.GameType, tileSet []*model.Tile) {
 	}
 }
 
-func distributeTiles(gameType game.GameType, tileSet []*model.Tile, verbose bool) map[string][]*model.Tile {
-	var tilesOnBoard map[string][]*model.Tile
-	tilesOnBoard = make(map[string][]*model.Tile)
+func distributeTiles(gameType *game.GameType, tileSet []*model.Tile, verbose bool) [][]*model.Tile {
+	var tilesOnBoard [][]*model.Tile
+	tilesOnBoard = make([][]*model.Tile, len(gameType.BoardLayout), len(gameType.BoardLayout))
+	log.Debug("Distributing Tiles")
 
 	randomRange := gameType.TilesCount
 	numbersAllocated := make([]int, 0, gameType.TilesCount)
-	for gridLane, tilesInLane := range gameType.BoardLayout {
-		tilesLine := make([]*model.Tile, tilesInLane, tilesInLane)
-		for i := 0; i < tilesInLane; i++ {
+	for column, rowLength := range gameType.BoardLayout {
+
+		log.WithFields(log.Fields{
+			"Column":     column,
+			"Row Length": rowLength,
+		}).Debug(" - Generating Row of Tiles:")
+
+		for i := 0; i < rowLength; i++ {
 			drawnTileNumber := drawTileNumber(randomRange, numbersAllocated)
 			tile := tileSet[drawnTileNumber]
 			numbersAllocated = append(numbersAllocated, drawnTileNumber)
-			tilesLine[i] = tile
+			tilesOnBoard[column] = append(tilesOnBoard[column], tile)
 		}
-		tilesOnBoard[gridLane] = tilesLine
+
 		if verbose {
 			log.Debug("Current Tiles Allocated: ", len(numbersAllocated), " / 19")
 			log.Debug("Tiles Allocated: ", numbersAllocated)
 		}
 	}
 	return tilesOnBoard
-}
-
-func distributeHarbors(gameType game.GameType) map[string]*model.Harbor {
-	var harborsOnBoard map[string]*model.Harbor
-	harborsOnBoard = make(map[string]*model.Harbor)
-
-	randomRange := gameType.HarborCount
-	numbersAllocated := make([]int, 0, gameType.HarborCount)
-	for _, positions := range gameType.HarborLayout {
-		drawnNumber := drawTileNumber(randomRange, numbersAllocated)
-		harbor := gameType.HarborSet[drawnNumber]
-		numbersAllocated = append(numbersAllocated, drawnNumber)
-		harborsOnBoard[positions] = harbor
-	}
-
-	return harborsOnBoard
 }
 
 func drawTileNumber(randomRange int, numbersAllocated []int) int {
