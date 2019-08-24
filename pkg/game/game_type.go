@@ -24,7 +24,7 @@ type GameType struct {
 	AdjacentTileGroups [][]string
 	NumberSet          []*model.Number
 	HarborSet          []*model.Harbor
-	HarborLayout       [][]string
+	HarborLayout       []string
 	BoardLayout        map[string]int
 	ToConsole          PrintBoardToConsole
 }

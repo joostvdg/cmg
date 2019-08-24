@@ -168,11 +168,7 @@ func distributeHarbors(gameType game.GameType) map[string]*model.Harbor {
 		drawnNumber := drawTileNumber(randomRange, numbersAllocated)
 		harbor := gameType.HarborSet[drawnNumber]
 		numbersAllocated = append(numbersAllocated, drawnNumber)
-		harborPosition := positions[0]
-		if len(positions) > 1 {
-			harborPosition = fmt.Sprintf("%s,%s", positions[0], positions[1])
-		}
-		harborsOnBoard[harborPosition] = harbor
+		harborsOnBoard[positions] = harbor
 	}
 
 	return harborsOnBoard

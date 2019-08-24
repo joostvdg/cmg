@@ -132,29 +132,8 @@ func generateHarborSetNormal(numberOfHarbors int) []*model.Harbor {
 }
 
 // generateHarborPositionsNormal creates the matrix of the harbors positions
-func generateHarborLayoutNormal() [][]string {
-
-	//{"c0"},
-	//{"a0", "b0"},
-	//{"a1", "a0"},
-	//{"a2"},
-	//{"b3", "c4"},
-	//{"d3", "c4"},
-	//{"e2"},
-	//{"e1", "e0"},
-	//{"e0", "d0"},
-
-	return [][]string{
-		{"c0"},
-		{"a0"},
-		{"a1"},
-		{"a2"},
-		{"b3"},
-		{"d3"},
-		{"e2"},
-		{"e1"},
-		{"e0"},
-	}
+func generateHarborLayoutNormal() []string {
+	return []string{ "c0","a0","a1","a2","b3","d3","e2","e1","e0"}
 }
 
 func generateNumberSetNormal(numberOfTiles int) []*model.Number {
