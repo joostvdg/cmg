@@ -6,33 +6,90 @@ import (
 	"github.com/joostvdg/cmg/pkg/webserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	roxServer "github.com/rollout/rox-go/server"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
+	"runtime"
+)
+
+type Container struct {
+	EnableTutorial roxServer.RoxFlag
+}
+
+var rox *roxServer.Rox
+var container = &Container{
+	EnableTutorial: roxServer.NewRoxFlag(false),
+}
+
+const (
+	envPort             = "PORT"
+	envLogFormatter     = "LOG_FORMAT"
+	envSentry           = "SENTRY_DSN"
+	envDeploymentTarget = "DEPLOYMENT_TARGET"
+	envRolloutKey       = "ROLLOUT_APP"
+
+	defaultPort             = "8080"
+	defaultDeploymentTarget = "LOCAL"
+	defaultLogFormatter     = "PLAIN"
+	jsonLogFormatter        = "JSON"
 )
 
 // StartWebserver starts the Echo webserver
 // Retrieves environment variable PORT for the server port to listen on
 // Retrieves environment variable SENTRY_DSN for exporting Sentry.io events
 func StartWebserver() {
-	port, ok := os.LookupEnv("PORT")
-
-	if !ok {
-		port = "8080"
+	port, portOk := os.LookupEnv(envPort)
+	if !portOk {
+		port = defaultPort
 	}
-	// Echo instance
-	e := echo.New()
-	e.Logger.Printf("Starting server on port %s\n", port)
 
-	sentryDsn, ok := os.LookupEnv("SENTRY_DSN")
-	if ok {
+	logFormat, logFormatOk := os.LookupEnv(envLogFormatter)
+	if logFormatOk && logFormat == jsonLogFormatter {
+		log.SetFormatter(&log.JSONFormatter{})
+	} else {
+		logFormat = defaultLogFormatter
+	}
+
+	deploymentTarget, deploymentOk := os.LookupEnv(envDeploymentTarget)
+	if !deploymentOk {
+		deploymentTarget = defaultDeploymentTarget
+	}
+
+	rolloutKey, rollOutOk := os.LookupEnv(envRolloutKey)
+
+	sentryDsn, sentryOk := os.LookupEnv(envSentry)
+	if sentryOk {
 		err := sentry.Init(sentry.ClientOptions{
 			Dsn: sentryDsn,
 		})
 
 		if err != nil {
-			e.Logger.Printf("Sentry initialization failed: %v\n", err)
+			log.Warnf("Sentry initialization failed: %v\n", err)
+			sentryOk = false
 		}
 	}
+
+	// Echo instance
+	e := echo.New()
+	log.WithFields(log.Fields{
+		"Port":            port,
+		"LogFormatter":    logFormat,
+		"OS":              runtime.GOOS,
+		"ARCH":            runtime.GOARCH,
+		"CPUs":            runtime.NumCPU(),
+		"GoRoutines":      runtime.NumGoroutine(),
+		"Rollout Enabled": rollOutOk,
+		"Sentry Enabled":  sentryOk,
+	}).Info("Webserver started")
+
+	// Rollout
+	options := roxServer.NewRoxOptions(roxServer.RoxOptionsBuilder{})
+
+	rox = roxServer.NewRox()
+	rox.Register("", container)
+	rox.SetCustomStringProperty("DEPLOYMENT_TARGET", deploymentTarget)
+	<-rox.Setup(rolloutKey, options)
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -41,6 +98,7 @@ func StartWebserver() {
 
 	// Routes
 	e.GET("/", hello)
+	e.GET("/rollout", rollout)
 	e.GET("/api/map", webserver.GetMap)
 	e.GET("/api/map/code", webserver.GetMapCode)
 	e.GET("/api/map/code/:code", webserver.GetMapByCode)
@@ -53,4 +111,12 @@ func StartWebserver() {
 // Handler
 func hello(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello, World!!")
+}
+
+func rollout(c echo.Context) error {
+	message := "Stay put"
+	if container.EnableTutorial.IsEnabled(nil) {
+		message = "Lets Rollout"
+	}
+	return c.String(http.StatusOK, message)
 }

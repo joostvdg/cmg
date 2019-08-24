@@ -32,7 +32,7 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 
 	board := MapGenerationAttempt(gameType, verbose)
 	for i := 0; i < numberOfLoops; i++ {
-		for !board.IsValid(rules, gameType, verbose) {
+		for !board.IsValid(rules, gameType) {
 			totalGenerations++
 			if totalGenerations > rules.Generations {
 				return model.Map{}, errors.New("Stuck in generation loop")
