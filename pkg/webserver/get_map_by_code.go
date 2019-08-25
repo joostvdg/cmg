@@ -41,7 +41,7 @@ func GetMapByCode(ctx echo.Context) error {
 	case 57:
 		// normal game
 		gameType = game.NormalGame
-		inflatedBoard, err := game.InflateNormalGameFromCode(code)
+		inflatedBoard, err := game.InflateNormalGameFromCode(code, &gameType)
 		if err != nil {
 			return invalidGameCode(ctx, "Invalid code value", code, jsonp, callback)
 		}
@@ -52,7 +52,7 @@ func GetMapByCode(ctx echo.Context) error {
 	case 90:
 		// large game
 		gameType = game.LargeGame
-		inflatedBoard, err := game.InflateLargeGameFromCode(code)
+		inflatedBoard, err := game.InflateLargeGameFromCode(code, &gameType)
 		if err != nil {
 			return invalidGameCode(ctx, "Invalid code value", code, jsonp, callback)
 		}

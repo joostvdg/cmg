@@ -5,9 +5,9 @@ import (
 	"github.com/joostvdg/cmg/pkg/model"
 )
 
-func InflateLargeGameFromCode(code string) (Board, error) {
+func InflateLargeGameFromCode(code string, gameType *GameType) (Board, error) {
 	gameLayout := generateLargeGameLayout()
-	return inflateGameFromCode(code, gameLayout)
+	return inflateGameFromCode(code, gameLayout, gameType)
 }
 
 func generateLargeGameLayout() map[string]int {

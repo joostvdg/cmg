@@ -1,7 +1,7 @@
 package mapgen
 
 import (
-	`fmt`
+	"fmt"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -31,14 +31,14 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 	gameTypeTime := time.Now()
 	gameTypeElapsed := gameTypeTime.Sub(start)
 	log.WithFields(log.Fields{
-		"Duration":  gameTypeElapsed,
+		"Duration": gameTypeElapsed,
 	}).Debug("Setup Game Type ")
 
 	verbose := false
 	totalGenerations := 0
 
 	board := MapGenerationAttempt(gameType, verbose)
-	elapsedGen,_ := time.ParseDuration("0ns")
+	elapsedGen, _ := time.ParseDuration("0ns")
 	for !board.IsValid(rules, gameType) {
 		totalGenerations++
 		if totalGenerations > rules.Generations {
@@ -50,24 +50,22 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 		elapsedGen += finishGen.Sub(startGen)
 	}
 
-
 	var content = model.Map{
 		GameType: gameType.Name,
 		Board:    board.Board,
 		GameCode: board.GetGameCode(requestInfo.Delimiter),
 	}
 
-
 	t := time.Now()
 	elapsed := t.Sub(start)
 	avgDurationNanaseconds := int(elapsedGen.Nanoseconds()) / totalGenerations
-	avgDuration,_ := time.ParseDuration(fmt.Sprintf("%dns", avgDurationNanaseconds))
+	avgDuration, _ := time.ParseDuration(fmt.Sprintf("%dns", avgDurationNanaseconds))
 
 	log.WithFields(log.Fields{
-		"RequestId": requestInfo.RequestId,
-		"Total Generations": totalGenerations,
-		"Avg. Creation Duration" : avgDuration,
-		"Total Duration":  elapsed,
+		"RequestId":              requestInfo.RequestId,
+		"Total Generations":      totalGenerations,
+		"Avg. Creation Duration": avgDuration,
+		"Total Duration":         elapsed,
 	}).Info("Created a new map")
 
 	return content, nil

@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	`time`
+	"sync"
+	"time"
 
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
-func inflateGameFromCode(code string, gameLayout map[string]int) (Board, error) {
+func inflateGameFromCode(code string, gameLayout map[string]int, gameType *GameType) (Board, error) {
 	start := time.Now()
 	log.Debug(" > Inflate Game from Game Code start")
 	var boardMap map[string][]*model.Tile
@@ -30,6 +31,9 @@ func inflateGameFromCode(code string, gameLayout map[string]int) (Board, error) 
 	}
 	sort.Strings(columns)
 
+	// TODO do we need these
+	//allHarbors := make([]*model.Harbor, 0)
+	allTiles := make([]*model.Tile, 0)
 	for _, column := range columns {
 		numberOfTiles := gameLayout[column]
 		tiles := make([]*model.Tile, numberOfTiles, numberOfTiles)
@@ -66,17 +70,25 @@ func inflateGameFromCode(code string, gameLayout map[string]int) (Board, error) 
 				Number:    number,
 			}
 			tiles[i] = &tile
+
+			allTiles = append(allTiles, &tile)
+			// TODO do we need these?
+			//allHarbors = append(allHarbors, &harbor)
 		}
 		boardMap[column] = tiles
 	}
 
+	var group sync.WaitGroup
 	board := Board{
-		Board: boardMap,
+		Board:     boardMap,
+		GameType:  *gameType,
+		WaitGroup: group,
+		Tiles:     allTiles,
 	}
 	t := time.Now()
 	elapsed := t.Sub(start)
 	log.WithFields(log.Fields{
-		"Duration":  elapsed,
+		"Duration": elapsed,
 	}).Debug(" < Inflate Game from Game Code finish")
 	return board, nil
 }

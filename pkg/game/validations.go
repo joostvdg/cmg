@@ -3,7 +3,7 @@ package game
 import (
 	"strconv"
 	"strings"
-	`time`
+	"time"
 
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
@@ -58,6 +58,18 @@ func ValidateResourceScores(board *Board, rules GameRules) bool {
 			// skip Desert tiles
 			continue
 		}
+
+		log.WithFields(log.Fields{
+			"score":          score,
+			"resourceId":     resourceId,
+			"resourceCounts": resourceCounts[resourceId],
+		}).Debug("  - scoring for resource:")
+
+		if resourceCounts[resourceId] == 0 {
+			isValid = false
+			continue
+		}
+
 		avgScore := score / resourceCounts[resourceId]
 		if avgScore > rules.MaximumResourceScore || avgScore < rules.MinimumResourceScore {
 			t := time.Now()
@@ -65,7 +77,7 @@ func ValidateResourceScores(board *Board, rules GameRules) bool {
 			log.WithFields(log.Fields{
 				"resourceId": resourceId,
 				"avgScore":   avgScore,
-				"Duration":  elapsed,
+				"Duration":   elapsed,
 			}).Debug("  - Invalid scoring for resource:")
 			isValid = false
 		}
@@ -74,7 +86,7 @@ func ValidateResourceScores(board *Board, rules GameRules) bool {
 	t := time.Now()
 	elapsed := t.Sub(start)
 	log.WithFields(log.Fields{
-		"Duration":  elapsed,
+		"Duration": elapsed,
 	}).Debug(" < ValidateResourceScores finish")
 	return isValid
 }
@@ -108,8 +120,8 @@ func ValidateAdjacentTiles(board *Board, rules GameRules) bool {
 			t := time.Now()
 			elapsed := t.Sub(start)
 			log.WithFields(log.Fields{
-				"Duration":  elapsed,
-			}).Info(" < ValidateAdjacentTiles finish")
+				"Duration": elapsed,
+			}).Debug(" < ValidateAdjacentTiles finish")
 			return false
 		}
 	}
@@ -117,8 +129,8 @@ func ValidateAdjacentTiles(board *Board, rules GameRules) bool {
 	t := time.Now()
 	elapsed := t.Sub(start)
 	log.WithFields(log.Fields{
-		"Duration":  elapsed,
-	}).Info(" < ValidateAdjacentTiles finish")
+		"Duration": elapsed,
+	}).Debug(" < ValidateAdjacentTiles finish")
 	if scoresOver300 > rules.MaxOver300 {
 		return false
 	}

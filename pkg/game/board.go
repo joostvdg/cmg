@@ -24,8 +24,6 @@ type Board struct {
 
 // IsValid wrapper function for encapsulating all the validations for the map
 func (b *Board) IsValid(rules GameRules, game GameType) bool {
-
-	// TODO parallelize via go routines
 	start := time.Now()
 
 	isValid := true

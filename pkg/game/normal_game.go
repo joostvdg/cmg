@@ -2,7 +2,13 @@ package game
 
 import (
 	"fmt"
+	"math/rand"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/joostvdg/cmg/pkg/model"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -100,9 +106,9 @@ func CreateNormalGame() GameType {
 }
 
 // InflateNormalGameFromCode inflates a normal game from code
-func InflateNormalGameFromCode(code string) (Board, error) {
+func InflateNormalGameFromCode(code string, gameType *GameType) (Board, error) {
 	gameLayout := generateNormalGameLayout()
-	return inflateGameFromCode(code, gameLayout)
+	return inflateGameFromCode(code, gameLayout, gameType)
 }
 
 func generateNormalGameLayout() map[string]int {
@@ -157,6 +163,67 @@ func generateNumberSetNormal(numberOfTiles int) []*model.Number {
 	numbers = append(numbers, model.Number11)
 	numbers = append(numbers, model.Number12)
 	return numbers
+}
+
+func GenerateGameCodeNormalGame() string {
+	start := time.Now()
+	numberPool := []string{"a", "b", "b", "c", "c", "d", "d", "e", "e", "f", "f", "g", "g", "h", "h", "i", "i", "j"}
+	landscapePool := []int{6, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5}
+	harborPool := []int{1, 2, 3, 4, 5, 0, 0, 0, 0}
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(landscapePool), func(i, j int) {
+		landscapePool[i], landscapePool[j] = landscapePool[j], landscapePool[i]
+	})
+	rand.Shuffle(len(numberPool), func(i, j int) {
+		numberPool[i], numberPool[j] = numberPool[j], numberPool[i]
+	})
+	rand.Shuffle(len(harborPool), func(i, j int) {
+		harborPool[i], harborPool[j] = harborPool[j], harborPool[i]
+	})
+
+	// harbor positions
+	var harborPositions map[int]bool
+	harborPositions = make(map[int]bool)
+	//  y   y   y   n   n   n   y   y   n   n   n   n   n   n   n   y   y   y   y
+	// 4d3 3g0 4h0 1j6 2a6 2b6 1b5 2f1 3c6 4i6 1e6 5c6 1g6 2e6 5d6 5i0 6z2 3h0 3f4
+	//  0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5   6   7   8
+	harborPositions[0] = true
+	harborPositions[1] = true
+	harborPositions[2] = true
+	harborPositions[6] = true
+	harborPositions[7] = true
+	harborPositions[15] = true
+	harborPositions[16] = true
+	harborPositions[17] = true
+	harborPositions[18] = true
+
+	var sb strings.Builder
+	harborCount := 0
+	numberCount := 0
+	for i, landscapeCode := range landscapePool {
+		sb.WriteString(strconv.Itoa(landscapeCode))
+		if landscapeCode == 6 {
+			sb.WriteString("z")
+		} else {
+			sb.WriteString(numberPool[numberCount])
+			numberCount++
+		}
+
+		if harborPositions[i] {
+			sb.WriteString(strconv.Itoa(harborPool[harborCount]))
+			harborCount++
+		} else {
+			sb.WriteString("6")
+		}
+	}
+
+	t := time.Now()
+	elapsed := t.Sub(start)
+	log.WithFields(log.Fields{
+		"Duration": elapsed,
+	}).Debug(" < generateMapCode finish")
+
+	return sb.String()
 }
 
 func printNormalGameToConsole(b *Board) {

@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-
 )
 
 const (
@@ -78,11 +77,10 @@ func StartWebserver() {
 	log.WithFields(log.Fields{
 		"Port":            port,
 		"LogFormatter":    logFormat,
-		"LogLevel":		   logLevel,
+		"LogLevel":        logLevel,
 		"OS":              runtime.GOOS,
 		"ARCH":            runtime.GOARCH,
 		"CPUs":            runtime.NumCPU(),
-		"GoRoutines":      runtime.NumGoroutine(),
 		"Rollout Enabled": rollOutOk,
 		"Sentry Enabled":  sentryOk,
 	}).Info("Webserver started")
@@ -105,6 +103,7 @@ func StartWebserver() {
 	e.GET("/", hello)
 	e.GET("/rollout", rolloutDemo)
 	e.GET("/api/map", webserver.GetMap)
+	e.GET("/api/v1/map", webserver.GetMapViaCodeGeneration)
 	e.GET("/api/map/code", webserver.GetMapCode)
 	e.GET("/api/map/code/:code", webserver.GetMapByCode)
 	e.GET("/api/legend", webserver.GetMapLegend)

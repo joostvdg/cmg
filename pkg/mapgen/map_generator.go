@@ -107,7 +107,6 @@ func updateTilesWithHarbors(tiles map[string][]*model.Tile, harbors map[string]*
 	debugLogDuration(start, " - updateTilesWithHarbors")
 }
 
-
 func generateTiles(gameType game.GameType) []*model.Tile {
 	start := time.Now()
 
