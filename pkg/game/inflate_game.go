@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	`time`
 
 	"github.com/joostvdg/cmg/pkg/model"
-	"github.com/prometheus/common/log"
+	log "github.com/sirupsen/logrus"
 )
 
 func inflateGameFromCode(code string, gameLayout map[string]int) (Board, error) {
+	start := time.Now()
+	log.Debug(" > Inflate Game from Game Code start")
 	var boardMap map[string][]*model.Tile
 	boardMap = make(map[string][]*model.Tile)
 
@@ -70,5 +73,10 @@ func inflateGameFromCode(code string, gameLayout map[string]int) (Board, error) 
 	board := Board{
 		Board: boardMap,
 	}
+	t := time.Now()
+	elapsed := t.Sub(start)
+	log.WithFields(log.Fields{
+		"Duration":  elapsed,
+	}).Debug(" < Inflate Game from Game Code finish")
 	return board, nil
 }

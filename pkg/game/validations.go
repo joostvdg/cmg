@@ -3,6 +3,7 @@ package game
 import (
 	"strconv"
 	"strings"
+	`time`
 
 	"github.com/joostvdg/cmg/pkg/model"
 	log "github.com/sirupsen/logrus"
@@ -24,6 +25,7 @@ var (
 // we derived the scores from the probability scores of the Number of the tile they're associated with
 // there is a maximum, and a minimum to validate, to make sure all resources fall within a certain distribution
 func ValidateResourceScores(board *Board, rules GameRules) bool {
+	start := time.Now()
 	log.Debug(" > ValidateResourceScores start")
 	isValid := true
 	resourceCounts := make([]int, 6, 6)
@@ -58,15 +60,22 @@ func ValidateResourceScores(board *Board, rules GameRules) bool {
 		}
 		avgScore := score / resourceCounts[resourceId]
 		if avgScore > rules.MaximumResourceScore || avgScore < rules.MinimumResourceScore {
+			t := time.Now()
+			elapsed := t.Sub(start)
 			log.WithFields(log.Fields{
 				"resourceId": resourceId,
 				"avgScore":   avgScore,
+				"Duration":  elapsed,
 			}).Debug("  - Invalid scoring for resource:")
 			isValid = false
 		}
 	}
 
-	log.Debug(" < ValidateResourceScores finish")
+	t := time.Now()
+	elapsed := t.Sub(start)
+	log.WithFields(log.Fields{
+		"Duration":  elapsed,
+	}).Debug(" < ValidateResourceScores finish")
 	return isValid
 }
 
@@ -76,7 +85,7 @@ func ValidateResourceScores(board *Board, rules GameRules) bool {
 // in addition, we also do not want too many spots (3 adjacent tiles) to be over a score of 300
 // as this would signify a skewed distribution of resources and their scores
 func ValidateAdjacentTiles(board *Board, rules GameRules) bool {
-
+	start := time.Now()
 	log.WithFields(log.Fields{
 		"number of tile groups": len(board.GameType.AdjacentTileGroups),
 	}).Debug(" > ValidateAdjacentTiles start")
@@ -96,12 +105,20 @@ func ValidateAdjacentTiles(board *Board, rules GameRules) bool {
 		}).Debug("  - Tile Group:")
 
 		if !valid {
-			log.Debug(" < ValidateAdjacentTiles finish")
+			t := time.Now()
+			elapsed := t.Sub(start)
+			log.WithFields(log.Fields{
+				"Duration":  elapsed,
+			}).Info(" < ValidateAdjacentTiles finish")
 			return false
 		}
 	}
 
-	log.Debug(" < ValidateAdjacentTiles finish")
+	t := time.Now()
+	elapsed := t.Sub(start)
+	log.WithFields(log.Fields{
+		"Duration":  elapsed,
+	}).Info(" < ValidateAdjacentTiles finish")
 	if scoresOver300 > rules.MaxOver300 {
 		return false
 	}
@@ -132,6 +149,7 @@ func ValidateHarbors(board *Board, rules GameRules) bool {
 			return false
 		}
 	}
+
 	log.Debug(" < ValidateHarbors finish")
 	return true
 }

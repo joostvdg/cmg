@@ -1,6 +1,7 @@
 package mapgen
 
 import (
+	`fmt`
 	"time"
 
 	"github.com/go-errors/errors"
@@ -26,25 +27,29 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 	} else if rules.GameType == 1 {
 		gameType = game.LargeGame
 	}
+
+	gameTypeTime := time.Now()
+	gameTypeElapsed := gameTypeTime.Sub(start)
+	log.WithFields(log.Fields{
+		"Duration":  gameTypeElapsed,
+	}).Debug("Setup Game Type ")
+
 	verbose := false
-	numberOfLoops := 1
 	totalGenerations := 0
 
 	board := MapGenerationAttempt(gameType, verbose)
-	for i := 0; i < numberOfLoops; i++ {
-		for !board.IsValid(rules, gameType) {
-			totalGenerations++
-			if totalGenerations > rules.Generations {
-				return model.Map{}, errors.New("Stuck in generation loop")
-			}
-			board = MapGenerationAttempt(gameType, verbose)
+	elapsedGen,_ := time.ParseDuration("0ns")
+	for !board.IsValid(rules, gameType) {
+		totalGenerations++
+		if totalGenerations > rules.Generations {
+			return model.Map{}, errors.New("Stuck in generation loop")
 		}
+		startGen := time.Now()
+		board = MapGenerationAttempt(gameType, verbose)
+		finishGen := time.Now()
+		elapsedGen += finishGen.Sub(startGen)
 	}
 
-	log.WithFields(log.Fields{
-		"NumberOfTiles": len(board.Tiles),
-		"Tiles":         board.Tiles,
-	}).Debug("Final Board: ")
 
 	var content = model.Map{
 		GameType: gameType.Name,
@@ -52,11 +57,17 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 		GameCode: board.GetGameCode(requestInfo.Delimiter),
 	}
 
+
 	t := time.Now()
 	elapsed := t.Sub(start)
+	avgDurationNanaseconds := int(elapsedGen.Nanoseconds()) / totalGenerations
+	avgDuration,_ := time.ParseDuration(fmt.Sprintf("%dns", avgDurationNanaseconds))
+
 	log.WithFields(log.Fields{
 		"RequestId": requestInfo.RequestId,
-		"Duration":  elapsed,
+		"Total Generations": totalGenerations,
+		"Avg. Creation Duration" : avgDuration,
+		"Total Duration":  elapsed,
 	}).Info("Created a new map")
 
 	return content, nil

@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+
 )
 
 const (
@@ -24,6 +25,7 @@ const (
 
 	defaultPort             = "8080"
 	debugLogLevel           = "DEBUG"
+	defaultLogLevel         = "INFO"
 	defaultDeploymentTarget = "LOCAL"
 	defaultLogFormatter     = "PLAIN"
 	jsonLogFormatter        = "JSON"
@@ -48,6 +50,8 @@ func StartWebserver() {
 	logLevel, logLevelFormatOk := os.LookupEnv(envLogLevel)
 	if logLevelFormatOk && logLevel == debugLogLevel {
 		log.SetLevel(log.DebugLevel)
+	} else {
+		logLevel = defaultLogLevel
 	}
 
 	deploymentTarget, deploymentOk := os.LookupEnv(envDeploymentTarget)
@@ -74,6 +78,7 @@ func StartWebserver() {
 	log.WithFields(log.Fields{
 		"Port":            port,
 		"LogFormatter":    logFormat,
+		"LogLevel":		   logLevel,
 		"OS":              runtime.GOOS,
 		"ARCH":            runtime.GOARCH,
 		"CPUs":            runtime.NumCPU(),
