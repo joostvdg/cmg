@@ -10,7 +10,7 @@ require (
 	github.com/dchest/safefile v0.0.0-20151022103144-855e8d98f185 // indirect
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
-	github.com/getsentry/sentry-go v0.2.1
+	github.com/getsentry/sentry-go v0.3.1
 	github.com/go-errors/errors v1.0.1
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/mock v1.2.0 // indirect
@@ -26,7 +26,7 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
-	go.opencensus.io v0.22.0
+	go.opencensus.io v0.22.2
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b // indirect
 )
 
