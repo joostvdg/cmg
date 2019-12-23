@@ -29,3 +29,5 @@ require (
 	go.opencensus.io v0.22.0
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b // indirect
 )
+
+go 1.13
