@@ -18,6 +18,7 @@ var (
 		ValidateResourceScores,
 		ValidateAdjacentTiles,
 		ValidateTilesNumbers,
+		ValidateResourceSpread,
 	}
 )
 
@@ -163,5 +164,124 @@ func ValidateHarbors(board *Board, rules GameRules) bool {
 	}
 
 	log.Debug(" < ValidateHarbors finish")
+	return true
+}
+
+// ValidateResourceSpread validates whether resources are spread on the board.
+// There shouldn't be too many of the same resource next to each other.
+func ValidateResourceSpread(board *Board, rules GameRules) bool {
+
+	return ValidateResourcesPerColumn(board, rules) && ValidateResourcesPerRow(board, rules)
+}
+
+// ValidateResourcesPerColumn validates if there's not too many of the same landscape type
+// in a Column.
+//    a   b   c   d   f
+// 0          x
+// 1      x       x
+// 2  x       x       x
+// 3      x       x
+// 4  x       x       x
+// 5      x       x
+// 6  x       x       x
+// 7      x       x
+// 8          x
+// c0, b0, a0
+// c1, b1, a1
+// c2, b2, a2
+// c0, d0, f0
+// c1, d1, f1
+// c2, d2, f2
+func ValidateResourcesPerColumn(board *Board, rules GameRules) bool {
+
+	initialRuneId := int('a')
+	numberOfRows := len(board.Board)
+	halfNumberOfRows := numberOfRows / 2
+	// first, do left arc
+	leftIsValid := validateResourcePerColumnArc(board, rules, initialRuneId)
+	// then do right arc
+	rightIsValid := validateResourcePerColumnArc(board, rules, initialRuneId+halfNumberOfRows)
+	return leftIsValid && rightIsValid
+}
+
+func validateResourcePerColumnArc(board *Board, rules GameRules, initialRune int) bool {
+	numberOfRows := len(board.Board)
+	// we do c0, b0, a0 -> 5 / 2 = 2 + 1 -> 3
+	numberOfRowsToCheck := (numberOfRows / 2) + 1
+	numberOfColumns := len(board.Board["a"])
+	for i := 0; i < numberOfColumns; i++ {
+		countField := 0
+		countForest := 0
+		countPasture := 0
+		countMountain := 0
+		countHill := 0
+		rowRune := initialRune
+
+		for j := 0; j < numberOfRowsToCheck; j++ {
+			rowIndex := string(rowRune)
+			rowRune++
+			tile := board.Board[rowIndex][i]
+			switch tile.Landscape.Code {
+			case model.Brick.Code:
+				countHill++
+			case model.Field.Code:
+				countField++
+			case model.Pasture.Code:
+				countPasture++
+			case model.Mountain.Code:
+				countMountain++
+			case model.Forest.Code:
+				countForest++
+			}
+		}
+
+		if countMountain > rules.MaxSameLandscapePerColumn ||
+			countForest > rules.MaxSameLandscapePerColumn ||
+			countPasture > rules.MaxSameLandscapePerColumn ||
+			countField > rules.MaxSameLandscapePerColumn ||
+			countHill > rules.MaxSameLandscapePerColumn {
+			log.Warnf("Too many tiles of the same landscape type in a column arc: %v\n", rules.MaxSameLandscapePerColumn)
+			return false
+		}
+	}
+
+	return true
+}
+
+// ValidateResourcesPerRow validates if there's not too many of the same landscape type
+// per row. Rows being a, b, c and so on.
+func ValidateResourcesPerRow(board *Board, rules GameRules) bool {
+
+	for _, column := range board.Board {
+		if len(column) > 0 {
+			countField := 0
+			countForest := 0
+			countPasture := 0
+			countMountain := 0
+			countHill := 0
+			for _, tile := range column {
+				switch tile.Landscape.Code {
+				case model.Brick.Code:
+					countHill++
+				case model.Field.Code:
+					countField++
+				case model.Pasture.Code:
+					countPasture++
+				case model.Mountain.Code:
+					countMountain++
+				case model.Forest.Code:
+					countForest++
+				}
+			}
+			if countMountain > rules.MaxSameLandscapePerRow ||
+				countForest > rules.MaxSameLandscapePerRow ||
+				countPasture > rules.MaxSameLandscapePerRow ||
+				countField > rules.MaxSameLandscapePerRow ||
+				countHill > rules.MaxSameLandscapePerRow {
+				log.Warnf("Too many tiles of the same landscape type in a Row: %v\n", rules.MaxSameLandscapePerRow)
+				return false
+			}
+		}
+	}
 	return true
 }

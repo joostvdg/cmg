@@ -33,6 +33,8 @@ func GetGameRulesFromRequest(c echo.Context) game.GameRules {
 	max300 := extractIntParamOrDefault(c, "max300", game.DefaultGameRulesNormal.MaxOver300)
 	maxr := extractIntParamOrDefault(c, "maxr", game.DefaultGameRulesNormal.MaximumResourceScore)
 	minr := extractIntParamOrDefault(c, "minr", game.DefaultGameRulesNormal.MinimumResourceScore)
+	maxRow := extractIntParamOrDefault(c, "maxRow", game.DefaultGameRulesNormal.MaxSameLandscapePerRow)
+	maxColumn := extractIntParamOrDefault(c, "maxColumn", game.DefaultGameRulesNormal.MaxSameLandscapePerColumn)
 
 	if gameTypeParam == "large" {
 		min = extractIntParamOrDefault(c, "min", game.DefaultGameRulesLarge.MinimumScore)
@@ -40,17 +42,21 @@ func GetGameRulesFromRequest(c echo.Context) game.GameRules {
 		max300 = extractIntParamOrDefault(c, "max300", game.DefaultGameRulesLarge.MaxOver300)
 		maxr = extractIntParamOrDefault(c, "maxr", game.DefaultGameRulesLarge.MaximumResourceScore)
 		minr = extractIntParamOrDefault(c, "minr", game.DefaultGameRulesLarge.MinimumResourceScore)
+		maxRow = extractIntParamOrDefault(c, "maxRow", game.DefaultGameRulesLarge.MaxSameLandscapePerRow)
+		maxColumn = extractIntParamOrDefault(c, "maxColumn", game.DefaultGameRulesLarge.MaxSameLandscapePerColumn)
 	}
 
 	rules := game.GameRules{
-		GameType:             gameTypeValue,
-		MinimumScore:         min,
-		MaximumScore:         max,
-		MaxOver300:           max300,
-		MaximumResourceScore: maxr,
-		MinimumResourceScore: minr,
-		Generations:          game.DefaultGameRulesNormal.Generations,
-		GameTypeString:       gameTypeParam,
+		GameType:                  gameTypeValue,
+		MinimumScore:              min,
+		MaximumScore:              max,
+		MaxOver300:                max300,
+		MaximumResourceScore:      maxr,
+		MinimumResourceScore:      minr,
+		MaxSameLandscapePerRow:    maxRow,
+		MaxSameLandscapePerColumn: maxColumn,
+		Generations:               game.DefaultGameRulesNormal.Generations,
+		GameTypeString:            gameTypeParam,
 	}
 
 	return rules
