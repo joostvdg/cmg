@@ -35,6 +35,7 @@ func GetGameRulesFromRequest(c echo.Context) game.GameRules {
 	minr := extractIntParamOrDefault(c, "minr", game.DefaultGameRulesNormal.MinimumResourceScore)
 	maxRow := extractIntParamOrDefault(c, "maxRow", game.DefaultGameRulesNormal.MaxSameLandscapePerRow)
 	maxColumn := extractIntParamOrDefault(c, "maxColumn", game.DefaultGameRulesNormal.MaxSameLandscapePerColumn)
+	adjacentSame := extractIntParamOrDefault(c, "adjacentSame", game.DefaultGameRulesNormal.AdjacentSame)
 
 	if gameTypeParam == "large" {
 		min = extractIntParamOrDefault(c, "min", game.DefaultGameRulesLarge.MinimumScore)
@@ -44,6 +45,7 @@ func GetGameRulesFromRequest(c echo.Context) game.GameRules {
 		minr = extractIntParamOrDefault(c, "minr", game.DefaultGameRulesLarge.MinimumResourceScore)
 		maxRow = extractIntParamOrDefault(c, "maxRow", game.DefaultGameRulesLarge.MaxSameLandscapePerRow)
 		maxColumn = extractIntParamOrDefault(c, "maxColumn", game.DefaultGameRulesLarge.MaxSameLandscapePerColumn)
+		adjacentSame = extractIntParamOrDefault(c, "adjacentSame", game.DefaultGameRulesLarge.AdjacentSame)
 	}
 
 	rules := game.GameRules{
@@ -55,6 +57,7 @@ func GetGameRulesFromRequest(c echo.Context) game.GameRules {
 		MinimumResourceScore:      minr,
 		MaxSameLandscapePerRow:    maxRow,
 		MaxSameLandscapePerColumn: maxColumn,
+		AdjacentSame:              adjacentSame,
 		Generations:               game.DefaultGameRulesNormal.Generations,
 		GameTypeString:            gameTypeParam,
 	}

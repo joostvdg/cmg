@@ -170,8 +170,25 @@ func ValidateHarbors(board *Board, rules GameRules) bool {
 // ValidateResourceSpread validates whether resources are spread on the board.
 // There shouldn't be too many of the same resource next to each other.
 func ValidateResourceSpread(board *Board, rules GameRules) bool {
+	adjacentSameValidation := true
+	if rules.AdjacentSame == 0 {
+		log.Infof("Adjacent Tiles Cannot Have The Same Resource is Enabled!")
+		adjacentSameValidation = validateResourcesPerAdjacentTiles(board, rules)
+	}
+	return adjacentSameValidation && validateResourcesPerColumn(board, rules) && validateResourcesPerRow(board, rules)
+}
 
-	return ValidateResourcesPerColumn(board, rules) && ValidateResourcesPerRow(board, rules)
+func validateResourcesPerAdjacentTiles(board *Board, rules GameRules) bool {
+	for _, tileGroup := range board.GameType.AdjacentTileGroups {
+		element0 := board.element(strings.Replace(tileGroup[0], "w", "l", 1))
+		element1 := board.element(strings.Replace(tileGroup[1], "w", "l", 1))
+		element2 := board.element(strings.Replace(tileGroup[2], "w", "l", 1))
+		if element0 == element1 && element1 == element2 {
+			log.Warnf("Found the same tiles: %s, %s, %s", element0, element1, element2)
+			return false
+		}
+	}
+	return true
 }
 
 // ValidateResourcesPerColumn validates if there's not too many of the same landscape type
@@ -192,7 +209,7 @@ func ValidateResourceSpread(board *Board, rules GameRules) bool {
 // c0, d0, f0
 // c1, d1, f1
 // c2, d2, f2
-func ValidateResourcesPerColumn(board *Board, rules GameRules) bool {
+func validateResourcesPerColumn(board *Board, rules GameRules) bool {
 
 	initialRuneId := int('a')
 	numberOfRows := len(board.Board)
@@ -248,9 +265,9 @@ func validateResourcePerColumnArc(board *Board, rules GameRules, initialRune int
 	return true
 }
 
-// ValidateResourcesPerRow validates if there's not too many of the same landscape type
+// validateResourcesPerRow validates if there's not too many of the same landscape type
 // per row. Rows being a, b, c and so on.
-func ValidateResourcesPerRow(board *Board, rules GameRules) bool {
+func validateResourcesPerRow(board *Board, rules GameRules) bool {
 
 	for _, column := range board.Board {
 		if len(column) > 0 {

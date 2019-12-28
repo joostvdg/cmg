@@ -9,6 +9,7 @@ type GameRules struct {
 	MaxOver300                int
 	MaxSameLandscapePerRow    int
 	MaxSameLandscapePerColumn int
+	AdjacentSame              int
 	GameType                  int
 	GameTypeString            string
 	Generations               int
@@ -24,6 +25,7 @@ var (
 		MaxOver300:                10,
 		MaxSameLandscapePerRow:    2,
 		MaxSameLandscapePerColumn: 2,
+		AdjacentSame:              0,
 		GameType:                  0,
 		GameTypeString:            "Normal",
 		Generations:               1500,
@@ -38,6 +40,7 @@ var (
 		MaxOver300:                22,
 		MaxSameLandscapePerRow:    3,
 		MaxSameLandscapePerColumn: 3,
+		AdjacentSame:              0,
 		GameType:                  1,
 		GameTypeString:            "Large",
 		Generations:               5000,
