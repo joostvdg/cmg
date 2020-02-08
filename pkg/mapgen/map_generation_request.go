@@ -1,10 +1,16 @@
 package mapgen
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-errors/errors"
+	"github.com/joostvdg/cmg/pkg/analytics"
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/webserver/model"
 	log "github.com/sirupsen/logrus"
@@ -68,5 +74,111 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 		"Total Duration":         elapsed,
 	}).Info("Created a new map")
 
+	go LogRequestEvent(requestInfo, totalGenerations, elapsed, gameType.Name)
+
 	return content, nil
+}
+
+func LogRequestEvent(requestInfo model.RequestInfo, generations int, elapsed time.Duration, gameType string) {
+	// retrieve API endpoint of CMG Analytics
+	sendAnalytics := false
+	analyticsAPIEndpoint, apiOke := os.LookupEnv("ANALYTICS_API_ENDPOINT")
+	if apiOke {
+		sendAnalytics = true
+	}
+
+	duration := int(elapsed / time.Microsecond)
+
+	// construct analytics object
+	generationRequest := analytics.GenerationRequest{
+		Duration:        duration,
+		GameType:        "Normal",
+		GenerationCount: generations,
+		Host:            requestInfo.RemoteAddr,
+		MapType:         gameType,
+		Parameters:      nil,
+		RequestID:       requestInfo.RequestId.String(),
+		UserAgent:       "",
+	}
+	jsonBody, _ := json.Marshal(generationRequest)
+
+	// retrieve bearer token
+	bearerToken := getBearerToken()
+
+	// call http endpoint of CMG Analytics
+	if sendAnalytics {
+		req, err := http.NewRequest("POST", analyticsAPIEndpoint, bytes.NewBuffer(jsonBody))
+		if err != nil {
+			log.Warn("Could not create request for Analytics")
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+bearerToken)
+		client := &http.Client{}
+		client.Timeout = time.Second * 180 // allow for some time for the heroku app to wake up
+		_, requestErr := client.Do(req)
+		if requestErr != nil {
+			log.Error("Could not send analytics", requestErr)
+		}
+	} else {
+		log.Warn("We have no Analytics API Endpoint, cannot send analytics!")
+	}
+}
+
+func getBearerToken() string {
+	endpointAvailable := false
+	analyticsLoginEndpoint, apiOke := os.LookupEnv("ANALYTICS_LOGIN_ENDPOINT")
+	if apiOke {
+		endpointAvailable = true
+	}
+
+	// retrieve credentials of CMG Analytics
+	analyticsAPIUser, apiUserOke := os.LookupEnv("ANALYTICS_API_USER")
+	if !apiUserOke {
+		analyticsAPIUser = "test"
+	}
+
+	analyticsAPIPassword, apiPasswordOke := os.LookupEnv("ANALYTICS_API_PASSWORD")
+	if !apiPasswordOke {
+		analyticsAPIPassword = "test"
+	}
+	loginRequest := analytics.LoginRequest{
+		Username: analyticsAPIUser,
+		Password: analyticsAPIPassword,
+	}
+	jsonBody, _ := json.Marshal(loginRequest)
+
+	if !endpointAvailable {
+		log.Warn("No Analytics Login Endpoint Available!")
+	} else {
+		req, err := http.NewRequest("POST", analyticsLoginEndpoint, bytes.NewBuffer(jsonBody))
+		if err != nil {
+			log.Warn("Could not create login request for Analytics")
+		}
+		req.SetBasicAuth(analyticsAPIUser, analyticsAPIPassword)
+		req.Header.Set("Content-Type", "application/json")
+		client := &http.Client{}
+		client.Timeout = time.Second * 180 // allow for some time for the heroku app to wake up
+		resp, requestErr := client.Do(req)
+		if requestErr != nil {
+			log.Error("Could not login to analytics", requestErr)
+		}
+
+		defer resp.Body.Close()
+		rawResponseData, err := ioutil.ReadAll(resp.Body)
+
+		if err != nil {
+			log.Error("Cannot read analytics login response")
+		}
+
+		var loginResponse analytics.LoginResponse
+
+		err = json.Unmarshal([]byte(rawResponseData), &loginResponse) // here!
+
+		if err != nil {
+			log.Error("Cannot parse analytics login response")
+		}
+		return loginResponse.AccessToken
+
+	}
+	return ""
 }

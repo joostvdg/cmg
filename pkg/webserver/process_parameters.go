@@ -81,7 +81,7 @@ func GetRequestInfoFromRequest(c echo.Context) model.RequestInfo {
 		delimiter = true
 	}
 
-	return model.RequestInfo{
+	requestInfo := model.RequestInfo{
 		RequestId:  requestId,
 		Callback:   callback,
 		JSONP:      jsonp,
@@ -90,4 +90,5 @@ func GetRequestInfoFromRequest(c echo.Context) model.RequestInfo {
 		Host:       c.Request().Host,
 		RemoteAddr: c.Request().RemoteAddr,
 	}
+	return requestInfo
 }
