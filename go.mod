@@ -23,7 +23,7 @@ require (
 	github.com/pkg/profile v1.3.0
 	github.com/rollout/rox-go v0.0.0-20190718141251-a768e678d707
 	github.com/sirupsen/logrus v1.4.2
-	github.com/spf13/cobra v0.0.5
+	github.com/spf13/cobra v0.0.6
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
 	go.opencensus.io v0.22.2
