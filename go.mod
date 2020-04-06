@@ -18,7 +18,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/jpoles1/gopherbadger v2.1.1+incompatible // indirect
 	github.com/kardianos/govendor v1.0.9 // indirect
-	github.com/labstack/echo/v4 v4.1.11
+	github.com/labstack/echo/v4 v4.1.16
 	github.com/labstack/gommon v0.3.0
 	github.com/pkg/profile v1.4.0
 	github.com/rollout/rox-go v0.0.0-20190718141251-a768e678d707
