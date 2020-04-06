@@ -26,7 +26,7 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
-	go.opencensus.io v0.22.2
+	go.opencensus.io v0.22.3
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b // indirect
 )
 
