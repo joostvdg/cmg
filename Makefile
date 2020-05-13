@@ -23,7 +23,7 @@ test:
 	CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS) -test.v -coverprofile cp.out
 
 coverage:
-    gopherbadger -md="README.md"
+    gopherbadger-md="README.md"
 
 full: $(PKGS)
 
