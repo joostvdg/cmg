@@ -28,7 +28,7 @@ var (
 		AdjacentSame:              0,
 		GameType:                  0,
 		GameTypeString:            "Normal",
-		Generations:               1500,
+		Generations:               2500,
 		Delimiter:                 "_",
 	}
 
