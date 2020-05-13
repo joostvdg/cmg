@@ -10,8 +10,8 @@ env:
   SERVICE_NAME: cmg
 
 jobs:
-  build:
-    name: build
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -23,8 +23,6 @@ jobs:
         run: gofmt -s -w -l **/*.go
       - name: test
         run: make test
-      - name: build
-        run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o cmg.sh
 
   tag:
     name: Create Tag & Release
@@ -68,7 +66,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+      - name: get dependency
+        run: go get -t -v ./...
+      - name: build
+        run: make linux
       # Setup gcloud CLI
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
