@@ -41,7 +41,7 @@ func ProcessMapGenerationRequest(rules game.GameRules, requestInfo model.Request
 	}).Debug("Setup Game Type ")
 
 	verbose := false
-	totalGenerations := 0
+	totalGenerations := 1 // to avoid the case we generate a map at first go, and divide by zero later
 
 	board := MapGenerationAttempt(gameType, verbose)
 	elapsedGen, _ := time.ParseDuration("0ns")
