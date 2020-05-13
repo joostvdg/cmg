@@ -1,5 +1,8 @@
 name: Go Build
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -15,6 +18,29 @@ jobs:
         run: gofmt -s -w -l **/*.go
       - name: build
         run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o cmg.sh
+
+  tag:
+    name: Create Tag & Release
+    needs: [build]
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version_bump.outputs.new_tag }}
+    steps:
+      - uses: actions/checkout@master
+      - id: version_bump
+        name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.17.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{steps.version_bump.outputs.new_tag}}
+          release_name: Release ${{steps.version_bump.outputs.new_tag}}
 
   sonarCloudTrigger:
     name: SonarCloud Trigger
@@ -41,13 +67,3 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       with:
         args: $SOURCE_REPO $SOURCE_BRANCH $DESTINATION_REPO $DESTINATION_BRANCH
-# https://github.com/marketplace/actions/git-sync-action
-#   deploy:
-#     name: deploy
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@master
-#       - name: git add remote
-#         run: git remote add heroku https://git.heroku.com/catan-map-generator.git
-#       - name: push
-#         run: git push heroku master --force
