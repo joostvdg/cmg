@@ -16,6 +16,8 @@ jobs:
         run: go get -t -v ./...
       - name: gofmt
         run: gofmt -s -w -l **/*.go
+      - name: test
+        run: make test
       - name: build
         run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o cmg.sh
 
