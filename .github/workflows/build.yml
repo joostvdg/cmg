@@ -78,6 +78,7 @@ jobs:
   cloud-run:
     name: Google Cloud Run
     runs-on: ubuntu-latest
+    needs: tag
 
     steps:
       - name: Checkout
@@ -95,16 +96,17 @@ jobs:
         run: |-
           gcloud builds submit \
             --quiet \
-            --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA"
+            --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME:${{needs.tag.outputs.tag}}"
       # Deploy image to Cloud Run
       - name: Deploy
         run: |-
           gcloud run deploy "$SERVICE_NAME" \
+            --project=${$PROJECT_ID} \
             --quiet \
             --region "$RUN_REGION" \
-            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
+            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:${{needs.tag.outputs.tag}}" \
             --platform "managed" \
             --allow-unauthenticated\
-            --memory=128mb \
+            --memory=128Mi \
             --max-instances=2 \
             --timeout=30
