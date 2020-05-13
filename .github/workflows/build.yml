@@ -26,7 +26,7 @@ jobs:
 
   tag:
     name: Create Tag & Release
-    needs: [build]
+    needs: [test]
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.version_bump.outputs.new_tag }}
