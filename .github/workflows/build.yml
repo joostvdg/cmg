@@ -66,10 +66,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: get dependency
-        run: go get -t -v ./...
-      - name: build
-        run: make linux
       # Setup gcloud CLI
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
