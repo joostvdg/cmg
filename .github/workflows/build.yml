@@ -39,14 +39,14 @@ jobs:
         uses: anothrNick/github-tag-action@1.17.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
+          WITH_V: false
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{steps.version_bump.outputs.new_tag}}
+          tag_name: v${{steps.version_bump.outputs.new_tag}}
           release_name: Release ${{steps.version_bump.outputs.new_tag}}
 
   sonarCloudTrigger:
