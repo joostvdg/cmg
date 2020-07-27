@@ -4,7 +4,7 @@ module github.com/joostvdg/cmg
 // +heroku install .
 
 require (
-	github.com/getsentry/sentry-go v0.6.1
+	github.com/getsentry/sentry-go v0.7.0
 	github.com/go-errors/errors v1.0.2
 	github.com/google/uuid v1.1.1
 	github.com/labstack/echo/v4 v4.1.16
