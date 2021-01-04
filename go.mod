@@ -6,7 +6,7 @@ module github.com/joostvdg/cmg
 require (
 	github.com/getsentry/sentry-go v0.6.1
 	github.com/go-errors/errors v1.0.2
-	github.com/google/uuid v1.1.1
+	github.com/google/uuid v1.1.3
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/rollout/rox-go v0.0.0-20190718141251-a768e678d707
 	github.com/sirupsen/logrus v1.6.0
