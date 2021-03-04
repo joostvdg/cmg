@@ -68,3 +68,25 @@ watch:
 
 skaffold-run: build
 	skaffold run -p dev
+
+dbuild: fmt
+	DOCKER_BUILDKIT=1 docker build --tag caladreas/cmg:latest .
+
+dclean:
+	docker rm cmg
+
+drun:
+	docker run --name cmg -p 8080:8080 caladreas/cmg:latest serve
+
+dpush: dbuild
+	docker push caladreas/cmg:latest
+
+gbuild: fmt
+	gcloud builds submit --tag gcr.io/$(PROJECT_ID)/cmg
+
+gpush: dbuild
+	docker tag caladreas/cmg:latest gcr.io/$(PROJECT_ID)/cmg:latest
+	docker push gcr.io/$(PROJECT_ID)/cmg:latest
+
+gdeploy: gpush
+	gcloud run deploy cmg --image=gcr.io/$(PROJECT_ID)/cmg:latest --memory=128Mi --max-instances=2 --timeout=30 --project=$(PROJECT_ID) --platform managed --allow-unauthenticated --region=europe-west4

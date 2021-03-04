@@ -87,12 +87,14 @@ func StartWebserver() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Rollout
-	options := roxServer.NewRoxOptions(roxServer.RoxOptionsBuilder{})
+	if rollOutOk {
+		options := roxServer.NewRoxOptions(roxServer.RoxOptionsBuilder{})
 
-	rollout.Rox = roxServer.NewRox()
-	rollout.Rox.Register("", rollout.RoxContainer)
-	rollout.Rox.SetCustomStringProperty("DEPLOYMENT_TARGET", deploymentTarget)
-	<-rollout.Rox.Setup(rolloutKey, options)
+		rollout.Rox = roxServer.NewRox()
+		rollout.Rox.Register("", rollout.RoxContainer)
+		rollout.Rox.SetCustomStringProperty("DEPLOYMENT_TARGET", deploymentTarget)
+		<-rollout.Rox.Setup(rolloutKey, options)
+	}
 
 	// Middleware
 	e.Use(middleware.Logger())
