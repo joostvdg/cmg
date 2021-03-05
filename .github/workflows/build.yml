@@ -12,7 +12,7 @@ env:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@master
       - name: check go version
@@ -22,12 +22,12 @@ jobs:
       - name: gofmt
         run: gofmt -s -w -l **/*.go
       - name: test
-        run: go test ./... -test.v -coverprofile cp.out
+        run: go test ./...
 
   tag:
     name: Create Tag & Release
     needs: [test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       tag: ${{ steps.version_bump.outputs.new_tag }}
     steps:
@@ -49,7 +49,7 @@ jobs:
 
   sonarCloudTrigger:
     name: SonarCloud Trigger
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@master
     - name: SonarCloud Scan
@@ -60,7 +60,7 @@ jobs:
 
   cloud-run:
     name: Google Cloud Run
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: tag
 
     steps:
