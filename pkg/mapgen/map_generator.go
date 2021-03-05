@@ -38,7 +38,7 @@ func GenerateMap(count int, loop bool, verbose bool, rules game.GameRules) {
 			if totalGenerations > maxGenerationAttempts {
 				sentry.CaptureMessage(fmt.Sprintf("Could not generate map of type %v, tried %v times", gameType, totalGenerations))
 				sentry.Flush(time.Second * 5)
-				log.Fatalf("Can not generate a map... (%v runs)\n",totalGenerations)
+				log.Fatalf("Can not generate a map... (%v runs)\n", totalGenerations)
 			}
 			log.Debug(fmt.Sprintf("Loop %v::%v", i, failedGenerations))
 			totalGenerations++

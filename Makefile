@@ -20,7 +20,10 @@ build:
 	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME) $(MAIN_GO)
 
 test: 
-	CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS) -test.v -coverprofile cp.out
+	go test ./... -test.v -coverprofile cp.out
+
+verify:
+	go test ./... -test.v -coverprofile cp.out
 
 coverage:
     gopherbadger-md="README.md"

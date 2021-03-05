@@ -22,7 +22,7 @@ jobs:
       - name: gofmt
         run: gofmt -s -w -l **/*.go
       - name: test
-        run: make test
+        run: go test ./... -test.v -coverprofile cp.out
 
   tag:
     name: Create Tag & Release

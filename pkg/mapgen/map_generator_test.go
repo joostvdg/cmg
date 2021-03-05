@@ -12,7 +12,7 @@ func TestGameCode(t *testing.T) {
 	expectedLengthOfGameCode := game.NormalGame.TilesCount * 3 // landscape, number, harbor
 	assert.Equal(t, expectedLengthOfGameCode, len(gameCode))
 	normalGameType := game.CreateNormalGame()
-	inflatedBoard, err := game.InflateNormalGameFromCode(gameCode,&normalGameType )
+	inflatedBoard, err := game.InflateNormalGameFromCode(gameCode, &normalGameType)
 	assert.NotEmpty(t, inflatedBoard)
 	assert.Empty(t, err)
 }
@@ -23,7 +23,7 @@ func TestGameCodeWithDelimiter(t *testing.T) {
 	expectedLengthOfGameCode := game.NormalGame.TilesCount*3 + len(board.Board) // landscape, number, harbor + rows
 	assert.Equal(t, expectedLengthOfGameCode, len(gameCode))
 	normalGameType := game.CreateNormalGame()
-	inflatedBoard, err := game.InflateNormalGameFromCode(gameCode, &normalGameType )
+	inflatedBoard, err := game.InflateNormalGameFromCode(gameCode, &normalGameType)
 	assert.NotEmpty(t, inflatedBoard)
 	assert.Empty(t, err)
 }
@@ -34,7 +34,7 @@ func TestGameCodeLage(t *testing.T) {
 	expectedLengthOfGameCode := game.NormalGame.TilesCount * 3 // landscape, number, harbor
 	assert.Equal(t, expectedLengthOfGameCode, len(gameCode))
 	normalGameType := game.CreateNormalGame()
-	inflatedBoard, err := game.InflateNormalGameFromCode(gameCode,&normalGameType )
+	inflatedBoard, err := game.InflateNormalGameFromCode(gameCode, &normalGameType)
 	assert.NotEmpty(t, inflatedBoard)
 	assert.Empty(t, err)
 }
@@ -45,7 +45,7 @@ func TestGameCodeWithDelimiterLage(t *testing.T) {
 	expectedLengthOfGameCode := game.LargeGame.TilesCount*3 + len(board.Board) // landscape, number, harbor + rows
 	assert.Equal(t, expectedLengthOfGameCode, len(gameCode))
 	normalGameType := game.CreateNormalGame()
-	inflatedBoard, err := game.InflateLargeGameFromCode(gameCode,&normalGameType)
+	inflatedBoard, err := game.InflateLargeGameFromCode(gameCode, &normalGameType)
 	assert.NotEmpty(t, inflatedBoard)
 	assert.Empty(t, err)
 }
