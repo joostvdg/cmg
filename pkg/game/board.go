@@ -79,13 +79,9 @@ func sameResource(tileCode string, harborResource model.Resource, board map[stri
 		return false
 	}
 	runeCode := []rune(tileCode)
-	column := string(runeCode[0:1])
-	row, _ := strconv.Atoi(string(runeCode[1:2]))
-	if board[column][row].Landscape.Resource == harborResource {
-		return true
-	}
-
-	return false
+	column := string(runeCode[0])
+	row, _ := strconv.Atoi(string(runeCode[1]))
+	return board[column][row].Landscape.Resource == harborResource
 }
 
 func (b *Board) PrintToConsole() {
@@ -94,9 +90,9 @@ func (b *Board) PrintToConsole() {
 
 func (board *Board) element(code string) string {
 	runeCode := []rune(code)
-	row, _ := strconv.Atoi(string(runeCode[0:1]))
-	column := string(runeCode[1:2])
-	elementType := string(runeCode[2:3])
+	row, _ := strconv.Atoi(string(runeCode[0]))
+	column := string(runeCode[1])
+	elementType := string(runeCode[2])
 	switch elementType {
 	case "l":
 		return fmt.Sprintf("%v", board.Board[column][row].Landscape)

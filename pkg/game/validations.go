@@ -232,10 +232,11 @@ func validateResourcePerColumnArc(board *Board, rules GameRules, initialRune int
 		countPasture := 0
 		countMountain := 0
 		countHill := 0
-		rowRune := initialRune
+		rowRune := rune(initialRune)
 
 		for j := 0; j < numberOfRowsToCheck; j++ {
 			rowIndex := string(rowRune)
+			//rowIndex := strconv.QuoteRune(rowRune)
 			rowRune++
 			tile := board.Board[rowIndex][i]
 			switch tile.Landscape.Code {
