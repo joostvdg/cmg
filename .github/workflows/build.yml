@@ -26,7 +26,7 @@ jobs:
       - name: gofmt
         run: gofmt -s -w -l **/*.go
       - name: test
-        run: go test ./...
+        run: make test
 
   tag:
     name: Create Tag & Release

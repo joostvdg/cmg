@@ -1,6 +1,6 @@
 SHELL := /bin/bash
-GO := GO15VENDOREXPERIMENT=1 go
-NAME := cmg
+GO := go
+NAME := REPLACE_ME_APP_NAME
 OS := $(shell uname)
 MAIN_GO := main.go
 ROOT_PACKAGE := $(GIT_PROVIDER)/$(ORG)/$(NAME)
@@ -20,10 +20,7 @@ build:
 	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME) $(MAIN_GO)
 
 test: 
-	go test ./... -test.v -coverprofile cp.out
-
-verify:
-	go test ./... -test.v -coverprofile cp.out
+	CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS) -test.v -coverprofile cp.out
 
 coverage:
     gopherbadger-md="README.md"
