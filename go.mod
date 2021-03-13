@@ -8,7 +8,7 @@ require (
 	github.com/go-errors/errors v1.1.1
 	github.com/google/uuid v1.2.0
 	github.com/hashicorp/go-version v1.2.1 // indirect
-	github.com/labstack/echo/v4 v4.2.0
+	github.com/labstack/echo/v4 v4.2.1
 	github.com/rollout/rox-go v0.0.0-20200507062832-43212e15b300
 	github.com/segmentio/backo-go v0.0.0-20200129164019-23eae7c10bd3 // indirect
 	github.com/sirupsen/logrus v1.8.0
