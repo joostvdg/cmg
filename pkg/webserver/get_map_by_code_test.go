@@ -3,6 +3,7 @@ package webserver
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joostvdg/cmg/cmd/context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,6 +19,7 @@ var (
 	mapByCodeApiPath = "map/code"
 )
 
+
 func TestCodeIsUnrecognizable(t *testing.T) {
 	unrecognizableCode := "abc"
 	targetPath := fmt.Sprintf("%v/%v/%v", baseApiPath, mapByCodeApiPath, unrecognizableCode)
@@ -28,7 +30,11 @@ func TestCodeIsUnrecognizable(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("code")
 	c.SetParamValues(unrecognizableCode)
-	if assert.NoError(t, GetMapByCode(c)) {
+	cmgContext := &context.CMGContext{
+		c,
+		nil,
+	}
+	if assert.NoError(t, GetMapByCode(cmgContext)) {
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 	res := rec.Result()
@@ -51,7 +57,11 @@ func TestCodeIsInvalid(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("code")
 	c.SetParamValues(invalidCode)
-	if assert.NoError(t, GetMapByCode(c)) {
+	cmgContext := &context.CMGContext{
+		c,
+		nil,
+	}
+	if assert.NoError(t, GetMapByCode(cmgContext)) {
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 	res := rec.Result()
@@ -74,7 +84,11 @@ func TestCodeValidNormalGame(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("code")
 	c.SetParamValues(gameCode)
-	if assert.NoError(t, GetMapByCode(c)) {
+	cmgContext := &context.CMGContext{
+		c,
+		nil,
+	}
+	if assert.NoError(t, GetMapByCode(cmgContext)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 	res := rec.Result()
@@ -98,7 +112,11 @@ func TestCodeValidNormalGameAlt(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("code")
 	c.SetParamValues(gameCode)
-	if assert.NoError(t, GetMapByCode(c)) {
+	cmgContext := &context.CMGContext{
+		c,
+		nil,
+	}
+	if assert.NoError(t, GetMapByCode(cmgContext)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 	res := rec.Result()

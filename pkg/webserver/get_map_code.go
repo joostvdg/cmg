@@ -1,6 +1,8 @@
 package webserver
 
 import (
+	"github.com/joostvdg/cmg/cmd/context"
+	"gopkg.in/segmentio/analytics-go.v3"
 	"net/http"
 	"time"
 
@@ -13,6 +15,7 @@ import (
 // GetMapCode starts the Generation Cycle, which may or may not succeed with a valid map according to the supplied Game Rules
 // It is different from GetMap because it only returns the game code
 func GetMapCode(c echo.Context) error {
+	cmgContext := c.(*context.CMGContext)
 	requestInfo := GetRequestInfoFromRequest(c)
 	rules := GetGameRulesFromRequest(c)
 
@@ -22,6 +25,16 @@ func GetMapCode(c echo.Context) error {
 	}
 
 	gameCode := model.GameCode{GameCode: wholeMap.GameCode}
+
+	// TODO what is a userId?
+	if cmgContext.Client != nil {
+		cmgContext.Client.Enqueue(analytics.Page{
+			UserId: requestInfo.RequestId.String(),
+			Name:   "CMG",
+			Properties: analytics.NewProperties().
+				SetURL(requestInfo.RequestURI),
+		})
+	}
 
 	if requestInfo.JSONP {
 		return c.JSONP(http.StatusOK, requestInfo.Callback, &gameCode)
@@ -34,6 +47,7 @@ func GetMapCode(c echo.Context) error {
 // and then inflate the game code before validating the board
 // WARNING: currently only supports default normal map
 func GetMapViaCodeGeneration(c echo.Context) error {
+	cmgContext := c.(*context.CMGContext)
 	start := time.Now()
 	log.Info(" > Generate Game by Game Code start")
 	requestInfo := GetRequestInfoFromRequest(c)
@@ -51,6 +65,24 @@ func GetMapViaCodeGeneration(c echo.Context) error {
 	log.WithFields(log.Fields{
 		"Duration": elapsed,
 	}).Info(" < Generate Game by Game Code finish")
+
+	// TODO what is a userId?
+	if cmgContext.Client != nil {
+		cmgContext.Client.Enqueue(analytics.Page{
+			UserId: requestInfo.RequestId.String(),
+			Name:   "Generate Map V2",
+			Properties: analytics.NewProperties().
+				SetURL(requestInfo.RequestURI),
+		})
+
+		cmgContext.Client.Enqueue(analytics.Track{
+			UserId: requestInfo.RequestId.String(),
+			Event:  "Generate Map V2",
+			Properties: analytics.NewProperties().
+				Set("generation_time", elapsed).
+				Set("game_type", board.GameType.Name),
+		})
+	}
 
 	if requestInfo.JSONP {
 		return c.JSONP(http.StatusOK, requestInfo.Callback, &content)

@@ -3,15 +3,18 @@ package webserver
 import (
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
+	"github.com/joostvdg/cmg/cmd/context"
 	"github.com/joostvdg/cmg/pkg/rollout"
 	"github.com/joostvdg/cmg/pkg/webserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	roxServer "github.com/rollout/rox-go/server"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/segmentio/analytics-go.v3"
 	"net/http"
 	"os"
 	"runtime"
+	"time"
 )
 
 const (
@@ -20,6 +23,7 @@ const (
 	envSentry           = "SENTRY_DSN"
 	envDeploymentTarget = "DEPLOYMENT_TARGET"
 	envRolloutKey       = "ROLLOUT_APP"
+	envSegmentKey       = "SEGMENT_KEY"
 	envLogLevel         = "LOG_LEVEL"
 
 	defaultPort             = "8080"
@@ -60,6 +64,8 @@ func StartWebserver() {
 
 	rolloutKey, rollOutOk := os.LookupEnv(envRolloutKey)
 
+	segmentKey, segmentOk := os.LookupEnv(envSegmentKey)
+
 	sentryDsn, sentryOk := os.LookupEnv(envSentry)
 	if sentryOk {
 		err := sentry.Init(sentry.ClientOptions{
@@ -83,6 +89,7 @@ func StartWebserver() {
 		"CPUs":            runtime.NumCPU(),
 		"Rollout Enabled": rollOutOk,
 		"Sentry Enabled":  sentryOk,
+		"Segment Enabled": segmentOk,
 	}).Info("Webserver started")
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -95,6 +102,27 @@ func StartWebserver() {
 		rollout.Rox.SetCustomStringProperty("DEPLOYMENT_TARGET", deploymentTarget)
 		<-rollout.Rox.Setup(rolloutKey, options)
 	}
+
+	var segmentClient analytics.Client
+	if segmentOk {
+		segmentClient, _ = analytics.NewWithConfig(segmentKey, analytics.Config{
+			Interval:  30 * time.Second,
+			BatchSize: 50,
+			Verbose:   true,
+		})
+		defer segmentClient.Close()
+	}
+
+	// Segment for Custom Context
+	e.Use(func(e echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cmgContext := &context.CMGContext{
+				c,
+				segmentClient,
+			}
+			return e(cmgContext)
+		}
+	})
 
 	// Middleware
 	e.Use(middleware.Logger())
@@ -127,3 +155,4 @@ func rolloutDemo(c echo.Context) error {
 	}
 	return c.String(http.StatusOK, message)
 }
+

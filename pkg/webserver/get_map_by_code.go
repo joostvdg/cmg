@@ -5,16 +5,19 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/google/uuid"
+	"github.com/joostvdg/cmg/cmd/context"
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/webserver/model"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/segmentio/analytics-go.v3"
 	"net/http"
 	"time"
 )
 
 // GetMap starts the Generation Cycle, which may or may not succeed with a valid map according to the supplied Game Rules
 func GetMapByCode(ctx echo.Context) error {
+	cmgContext := ctx.(*context.CMGContext)
 	code := ctx.Param("code")
 	callback := ctx.QueryParam("callback")
 	jsonp := ctx.QueryParam("jsonp")
@@ -73,6 +76,24 @@ func GetMapByCode(ctx echo.Context) error {
 		"UUID":     requestUuid,
 		"Duration": elapsed,
 	}).Info("Created a new map")
+
+	// TODO what is a userId?
+	if cmgContext.Client != nil {
+		cmgContext.Client.Enqueue(analytics.Page{
+			UserId: requestUuid.String(),
+			Name:   "Map By Code",
+			Properties: analytics.NewProperties().
+				SetURL(ctx.Request().RequestURI),
+		})
+
+		cmgContext.Client.Enqueue(analytics.Track{
+			UserId: requestUuid.String(),
+			Event:  "Map By Code",
+			Properties: analytics.NewProperties().
+				Set("generation_time", elapsed).
+				Set("game_type", gameType.Name),
+		})
+	}
 
 	if jsonp == "true" {
 		return ctx.JSONP(http.StatusOK, callback, &content)
