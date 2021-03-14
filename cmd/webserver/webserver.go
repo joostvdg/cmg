@@ -106,9 +106,10 @@ func StartWebserver() {
 	var segmentClient analytics.Client
 	if segmentOk {
 		segmentClient, _ = analytics.NewWithConfig(segmentKey, analytics.Config{
-			Interval:  30 * time.Second,
-			BatchSize: 50,
+			Interval:  5 * time.Second,
+			BatchSize: 10,
 			Verbose:   true,
+
 		})
 		defer segmentClient.Close()
 	}
