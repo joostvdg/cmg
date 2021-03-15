@@ -11,7 +11,7 @@ require (
 	github.com/labstack/echo/v4 v4.2.0
 	github.com/rollout/rox-go v0.0.0-20200507062832-43212e15b300
 	github.com/segmentio/backo-go v0.0.0-20200129164019-23eae7c10bd3 // indirect
-	github.com/sirupsen/logrus v1.8.0
+	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v0.0.7
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
