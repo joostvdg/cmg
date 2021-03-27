@@ -16,7 +16,7 @@ App for generating Catan maps which are fair and balanced.
 
 ## Preview Env
 
-TBD: test1
+TBD: test2
 
 ## Live version
 
