@@ -14,6 +14,10 @@ App for generating Catan maps which are fair and balanced.
 <a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-62%25-brightgreen.svg?longCache=true)</a>
 [![DepShield Badge](https://depshield.sonatype.org/badges/joostvdg/cmg/depshield.svg)](https://depshield.github.io)
 
+## Preview Env
+
+TBD
+
 ## Live version
 
 The application is running as a free heroku app to try: [https://catan-map-generator.herokuapp.com/api/map](https://catan-map-generator.herokuapp.com/api/map).
