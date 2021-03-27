@@ -5,6 +5,8 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -14,11 +16,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: print SHA
+        run: echo ${{ env.GITHUB_SHA }}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: caladreas/cmg:${{ env.GITHUB_SHA }}
+          tags: caladreas/cmg:latest,caladreas/cmg:${{ env.GITHUB_SHA }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
