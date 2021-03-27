@@ -7,6 +7,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set env
+        run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+      - name: Test
+        run: echo $GITHUB_SHA_SHORT
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -23,6 +27,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: caladreas/cmg:latest,caladreas/cmg:${{ env.GITHUB_SHA }}
+          tags: caladreas/cmg:latest,caladreas/cmg:$GITHUB_SHA_SHORT
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
