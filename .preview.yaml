@@ -4,6 +4,8 @@ previews:
   container:
     image: caladreas/cmg:${ENV_COMMIT_SHA}
     command:
-    - serve
+    - cmg
+    args:
+    - serve      
     ports:
     - value: 8080
