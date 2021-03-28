@@ -1,0 +1,9 @@
+apiVersion: 1.0.0
+previews:
+- name: default
+  container:
+    image: caladreas/cmg:${ENV_COMMIT_SHA}
+    command:
+    - serve
+    ports:
+    - value: 8080
