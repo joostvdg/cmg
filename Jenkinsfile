@@ -91,7 +91,7 @@ spec:
                         stage('Verify Image') {
                             steps {
                                 container('agent') {
-                                    sh 'cmg mapgen --gameType 1 --max 365 --min 156 --minResource 65 --max300 22'
+                                    sh 'cmg mapgen --gameType 1 --max 361 --min 165 --minResource 30 --max300 11'
                                 }
                             }
                         }
