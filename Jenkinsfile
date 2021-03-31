@@ -4,7 +4,7 @@ pipeline {
     environment {
         REPO        = 'caladreas'
         IMAGE       = 'cmg-preview'
-        TAG         = "0.0.${GIT_COMMIT}"
+        TAG_BASE    = "0.0."
     }
     stages {
         stage('Image Build') {
@@ -58,11 +58,11 @@ spec:
                         }
                         stage('Build with Kaniko') {
                             steps {
-                                sh 'echo image fqn=${REPO}/${IMAGE}:${TAG}'
+                                sh 'echo image fqn=${REPO}/${IMAGE}:${TAG_BASE}${GIT_COMMIT}'
                                 container(name: 'kaniko', shell: '/busybox/sh') {
                                     withEnv(['PATH+EXTRA=/busybox']) {
                                         sh '''#!/busybox/sh
-                                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cleanup --cache=true --destination ${REPO}/${IMAGE}:${TAG} --destination ${REPO}/${IMAGE}:latest
+                                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cleanup --cache=true --destination ${REPO}/${IMAGE}:${TAG_BASE}${GIT_COMMIT} --destination ${REPO}/${IMAGE}:latest
                                         '''
                                     }
                                 }
@@ -81,7 +81,7 @@ spec:
                             label 'agent-test'
                             containerTemplate {
                                 name 'agent'
-                                image "${REPO}/${IMAGE}:${TAG}"
+                                image "${REPO}/${IMAGE}:${TAG_BASE}${GIT_COMMIT}"
                                 ttyEnabled true
                                 command 'cat'
                             }
