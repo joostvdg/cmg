@@ -2,7 +2,7 @@ apiVersion: 1.0.0
 previews:
 - name: default
   container:
-    image: caladreas/cmg:${ENV_COMMIT_SHA}
+    image: caladreas/cmg-preview:${ENV_COMMIT_SHA}
     command:
     - serve
     ports:

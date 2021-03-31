@@ -4,7 +4,7 @@ pipeline {
     environment {
         REPO        = 'caladreas'
         IMAGE       = 'cmg-preview'
-        TAG         = "0.0.0-${BUILD_NUMBER}"
+        TAG         = "0.0.${GIT_COMMIT}"
     }
     stages {
         stage('Image Build') {
