@@ -51,11 +51,6 @@ spec:
                         }
                     }
                     stages {
-                        stage('Checkout') {
-                            steps {
-                                git 'https://github.com/joostvdg/cmg.git'
-                            }
-                        }
                         stage('Build with Kaniko') {
                             steps {
                                 sh 'echo image fqn=${REPO}/${IMAGE}:${TAG}'
