@@ -146,7 +146,7 @@ func StartWebserver() {
 
 // Handler
 func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!!")
+	return c.String(http.StatusOK, "Hello, EMEA SA's")
 }
 
 func rolloutDemo(c echo.Context) error {
