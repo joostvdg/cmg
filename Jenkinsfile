@@ -1,65 +1,103 @@
+// https://github.com/GoogleContainerTools/kaniko/issues/835
 pipeline {
-  agent any
-  environment {
-    ORG = 'joostvdg'
-    APP_NAME = 'cmg'
-    CHARTMUSEUM_CREDS = credentials('jenkins-x-chartmuseum')
-  }
-  stages {
-    stage('CI Build and push snapshot') {
-      when {
-        branch 'PR-*'
-      }
-      environment {
-        PREVIEW_VERSION = "0.0.0-SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER"
-        PREVIEW_NAMESPACE = "$APP_NAME-$BRANCH_NAME".toLowerCase()
-        HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
-      }
-      steps {
-        dir('/home/jenkins/go/src/github.com/joostvdg/cmg') {
-          checkout scm
-          sh "make linux"
-          sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
-          sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
-        }
-        dir('/home/jenkins/go/src/github.com/joostvdg/cmg/charts/preview') {
-          sh "make preview"
-          sh "jx preview --app $APP_NAME --dir ../.."
-        }
-      }
+    agent none
+    environment {
+        REPO        = 'caladreas'
+        IMAGE       = 'cmg-preview'
+        TAG         = "0.0.0-${BUILD_NUMBER}"
     }
-    stage('Build Release') {
-      when {
-        branch 'master'
-      }
-      steps {
-        dir('/home/jenkins/go/src/github.com/joostvdg/cmg') {
-          git 'https://github.com/joostvdg/cmg.git'
-
-          // so we can retrieve the version in later steps
-          sh "echo \$(jx-release-version) > VERSION"
-          sh "jx step tag --version \$(cat VERSION)"
-          sh "make build"
-          sh "export VERSION=`cat VERSION` && skaffold build -f skaffold.yaml"
-          sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:\$(cat VERSION)"
+    stages {
+        stage('Image Build') {
+            when { changeRequest target: 'main' }
+            parallel {
+                stage('Kaniko') {
+                    agent {
+                        kubernetes {
+                        //cloud 'kubernetes'
+                        label 'cmg-kaniko-build'
+                        yaml """
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: golang
+    image: golang:1.16
+    command:
+    - cat
+    tty: true
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: jenkins-docker-cfg
+        mountPath: /kaniko/.docker
+    env:
+      - name: DOCKER_CONFIG
+        value: /kaniko/.docker
+  volumes:
+  - name: jenkins-docker-cfg
+    projected:
+      sources:
+      - secret:
+          name: docker-credentials
+          items:
+            - key: .dockerconfigjson
+              path: config.json
+"""
+                        }
+                    }
+                    stages {
+                        stage('Checkout') {
+                            steps {
+                                git 'https://github.com/joostvdg/cmg.git'
+                            }
+                        }
+                        stage('Build with Kaniko') {
+                            steps {
+                                sh 'echo image fqn=${REPO}/${IMAGE}:${TAG}'
+                                container(name: 'kaniko', shell: '/busybox/sh') {
+                                    withEnv(['PATH+EXTRA=/busybox']) {
+                                        sh '''#!/busybox/sh
+                                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cleanup --cache=true --destination ${REPO}/${IMAGE}:${TAG} --destination ${REPO}/${IMAGE}:latest
+                                        '''
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-    stage('Promote to Environments') {
-      when {
-        branch 'master'
-      }
-      steps {
-        dir('/home/jenkins/go/src/github.com/joostvdg/cmg/charts/cmg') {
-          sh "jx step changelog --version v\$(cat ../../VERSION)"
-
-          // release the helm chart
-          sh "jx step helm release"
-
-          // promote through all 'Auto' promotion Environments
-          sh "jx promote -b --all-auto --timeout 1h --version \$(cat ../../VERSION)"
+        stage('Image Test') {
+            when { changeRequest target: 'main' }
+            parallel {
+                stage('Agent') {
+                    agent {
+                        kubernetes {
+                            label 'agent-test'
+                            containerTemplate {
+                                name 'agent'
+                                image "${REPO}/${IMAGE}:${TAG}"
+                                ttyEnabled true
+                                command 'cat'
+                            }
+                        }
+                    }
+                    stages {
+                        stage('Verify Image') {
+                            steps {
+                                container('agent') {
+                                    sh 'cmg mapgen --gameType 1 --max 365 --min 156 --minResource 65 --max300 22'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
