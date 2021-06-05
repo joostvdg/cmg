@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 GO := go
-NAME := REPLACE_ME_APP_NAME
+NAME := cmg
 OS := $(shell uname)
 MAIN_GO := main.go
 ROOT_PACKAGE := $(GIT_PROVIDER)/$(ORG)/$(NAME)
