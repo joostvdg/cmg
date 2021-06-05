@@ -19,6 +19,7 @@ var (
 		ValidateAdjacentTiles,
 		ValidateTilesNumbers,
 		ValidateResourceSpread,
+		ValidateHarbors,
 	}
 )
 
@@ -148,23 +149,15 @@ func ValidateTilesNumbers(board *Board, rules GameRules) bool {
 // ValidateHarbors validates whether or not a harbor is linked to a resource tile with the same resource as the harbor
 func ValidateHarbors(board *Board, rules GameRules) bool {
 	log.Debug(" > ValidateHarbors start")
-	for k, v := range board.Harbors {
-		harborResource := v.Resource
-		tileCodeA := k
-		tileCodeB := ""
-		if strings.Contains(tileCodeA, ",") {
-			tileCodes := strings.Split(tileCodeA, ",")
-			tileCodeA = tileCodes[0]
-			tileCodeB = tileCodes[1]
-		}
-		if sameResource(tileCodeA, harborResource, board.Board) || sameResource(tileCodeB, harborResource, board.Board) {
-			log.Debug(" < ValidateHarbors finish")
-			return false
+	harborsAreValid := true
+	for _,tile := range board.Tiles {
+		if tile.Harbor != *model.HarborNone && tile.Harbor.Resource.Code == tile.Landscape.Resource.Code{
+			harborsAreValid = false
+			log.Warnf("Harbor INVALID: %v (harbor) %v (tile)", tile.Harbor.Resource.Code, tile.Landscape.Resource.Code)
 		}
 	}
-
 	log.Debug(" < ValidateHarbors finish")
-	return true
+	return harborsAreValid
 }
 
 // ValidateResourceSpread validates whether resources are spread on the board.

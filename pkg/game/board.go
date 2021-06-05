@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/joostvdg/cmg/pkg/model"
-	"github.com/joostvdg/cmg/pkg/rollout"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,10 +29,6 @@ func (b *Board) IsValid(rules GameRules, game GameType) bool {
 	log.Debug("Validating map")
 
 	validationFunctions := Validations
-	if rollout.RoxContainer.EnableHarborValidation.IsEnabled(nil) {
-		validationFunctions = append(validationFunctions, ValidateHarbors)
-	}
-
 	for _, validationFunc := range validationFunctions {
 		b.WaitGroup.Add(1)
 		go func(validation ValidateBoard) {
