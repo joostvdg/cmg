@@ -82,5 +82,5 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@main
         with:
-          image: gcr.io/$PROJECT_ID/$SERVICE_NAME:${{needs.tag.outputs.tag}}
+          image: gcr.io/${{PROJECT_ID}}/${{SERVICE_NAME}}:${{needs.tag.outputs.tag}}
           service: $SERVICE_NAME
