@@ -21,13 +21,7 @@ The application is running as a free heroku app to try: [https://catan-map-gener
 
 Look for the Code to see the API for for more commands (or the shell scripts such as `6p-game.sh`).
 
-The UI is available at [https://catanmap.herokuapp.com/](https://catanmap.herokuapp.com/).
-
-## Run on Jenkins X
-
-```
-jx import
-```
+The UI is available at [https://catan-ui.herokuapp.com//](https://catan-ui.herokuapp.com/).
 
 ## Run as Google Cloud Function
 
