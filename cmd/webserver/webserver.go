@@ -8,7 +8,6 @@ import (
 	"github.com/joostvdg/cmg/pkg/webserver"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	roxServer "github.com/rollout/rox-go/server"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/segmentio/analytics-go.v3"
 	"net/http"
@@ -18,20 +17,17 @@ import (
 )
 
 const (
-	envPort             = "PORT"
-	envLogFormatter     = "LOG_FORMAT"
-	envSentry           = "SENTRY_DSN"
-	envDeploymentTarget = "DEPLOYMENT_TARGET"
-	envRolloutKey       = "ROLLOUT_APP"
-	envSegmentKey       = "SEGMENT_KEY"
-	envLogLevel         = "LOG_LEVEL"
+	envPort         = "PORT"
+	envLogFormatter = "LOG_FORMAT"
+	envSentry       = "SENTRY_DSN"
+	envSegmentKey   = "SEGMENT_KEY"
+	envLogLevel     = "LOG_LEVEL"
 
-	defaultPort             = "8080"
-	debugLogLevel           = "DEBUG"
-	defaultLogLevel         = "INFO"
-	defaultDeploymentTarget = "LOCAL"
-	defaultLogFormatter     = "PLAIN"
-	jsonLogFormatter        = "JSON"
+	defaultPort         = "8080"
+	debugLogLevel       = "DEBUG"
+	defaultLogLevel     = "INFO"
+	defaultLogFormatter = "PLAIN"
+	jsonLogFormatter    = "JSON"
 )
 
 // StartWebserver starts the Echo webserver
@@ -57,13 +53,6 @@ func StartWebserver() {
 		logLevel = defaultLogLevel
 	}
 
-	deploymentTarget, deploymentOk := os.LookupEnv(envDeploymentTarget)
-	if !deploymentOk {
-		deploymentTarget = defaultDeploymentTarget
-	}
-
-	rolloutKey, rollOutOk := os.LookupEnv(envRolloutKey)
-
 	segmentKey, segmentOk := os.LookupEnv(envSegmentKey)
 
 	sentryDsn, sentryOk := os.LookupEnv(envSentry)
@@ -87,21 +76,10 @@ func StartWebserver() {
 		"OS":              runtime.GOOS,
 		"ARCH":            runtime.GOARCH,
 		"CPUs":            runtime.NumCPU(),
-		"Rollout Enabled": rollOutOk,
 		"Sentry Enabled":  sentryOk,
 		"Segment Enabled": segmentOk,
 	}).Info("Webserver started")
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// Rollout
-	if rollOutOk {
-		options := roxServer.NewRoxOptions(roxServer.RoxOptionsBuilder{})
-
-		rollout.Rox = roxServer.NewRox()
-		rollout.Rox.Register("", rollout.RoxContainer)
-		rollout.Rox.SetCustomStringProperty("DEPLOYMENT_TARGET", deploymentTarget)
-		<-rollout.Rox.Setup(rolloutKey, options)
-	}
 
 	var segmentClient analytics.Client
 	if segmentOk {
@@ -109,7 +87,6 @@ func StartWebserver() {
 			Interval:  5 * time.Second,
 			BatchSize: 10,
 			Verbose:   true,
-
 		})
 		defer segmentClient.Close()
 	}
@@ -156,4 +133,3 @@ func rolloutDemo(c echo.Context) error {
 	}
 	return c.String(http.StatusOK, message)
 }
-
