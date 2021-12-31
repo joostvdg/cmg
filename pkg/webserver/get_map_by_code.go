@@ -8,6 +8,7 @@ import (
 	"github.com/joostvdg/cmg/cmd/context"
 	"github.com/joostvdg/cmg/pkg/game"
 	"github.com/joostvdg/cmg/pkg/webserver/model"
+	"github.com/kennygrant/sanitize"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/segmentio/analytics-go.v3"
@@ -26,7 +27,7 @@ func GetMapByCode(ctx echo.Context) error {
 
 	log.WithFields(log.Fields{
 		"UUID":       requestUuid,
-		"Code":       code,
+		"Code":       sanitize.Name(code),
 		"RequestURI": ctx.Request().RequestURI,
 		"HOST":       ctx.Request().Host,
 		"RemoteAddr": ctx.Request().RemoteAddr,
@@ -46,7 +47,7 @@ func GetMapByCode(ctx echo.Context) error {
 		gameType = game.NormalGame
 		inflatedBoard, err := game.InflateNormalGameFromCode(code, &gameType)
 		if err != nil {
-			return invalidGameCode(ctx, "Invalid code value", code, jsonp, callback)
+			return invalidGameCode(ctx, "Invalid code value", sanitize.Name(code), jsonp, callback)
 		}
 		board = inflatedBoard
 	case 97:
@@ -57,11 +58,11 @@ func GetMapByCode(ctx echo.Context) error {
 		gameType = game.LargeGame
 		inflatedBoard, err := game.InflateLargeGameFromCode(code, &gameType)
 		if err != nil {
-			return invalidGameCode(ctx, "Invalid code value", code, jsonp, callback)
+			return invalidGameCode(ctx, "Invalid code value", sanitize.Name(code), jsonp, callback)
 		}
 		board = inflatedBoard
 	default:
-		return invalidGameCode(ctx, "Unrecognizable game code", code, jsonp, callback)
+		return invalidGameCode(ctx, "Unrecognizable game code", sanitize.Name(code), jsonp, callback)
 	}
 
 	var content = model.Map{
@@ -102,7 +103,7 @@ func GetMapByCode(ctx echo.Context) error {
 }
 
 func invalidGameCode(ctx echo.Context, reason string, code string, jsonp string, callback string) error {
-	message := fmt.Sprintf("Could not inflate map base on game code %v, reason: %v", code, reason)
+	message := fmt.Sprintf("Could not inflate map base on game code %s, reason: %s", sanitize.Name(code), reason)
 	if hub := sentryecho.GetHubFromContext(ctx); hub != nil {
 		hub.WithScope(func(scope *sentry.Scope) {
 			scope.SetExtra("Code", code)

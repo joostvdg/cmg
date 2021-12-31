@@ -3,6 +3,7 @@ package game
 import (
 	"errors"
 	"fmt"
+	"github.com/kennygrant/sanitize"
 	"sort"
 	"strings"
 	"sync"
@@ -15,8 +16,7 @@ import (
 func inflateGameFromCode(code string, gameLayout map[string]int, gameType *GameType) (Board, error) {
 	start := time.Now()
 	log.Debug(" > Inflate Game from Game Code start")
-	var boardMap map[string][]*model.Tile
-	boardMap = make(map[string][]*model.Tile)
+	boardMap := make(map[string][]*model.Tile)
 
 	// if we found a delimiter, and we happen to have exactly the number expected, we're probably good
 	if strings.Contains(code, DefaultGameRulesNormal.Delimiter) && strings.Count(code, DefaultGameRulesNormal.Delimiter) == len(gameLayout) {
@@ -36,13 +36,13 @@ func inflateGameFromCode(code string, gameLayout map[string]int, gameType *GameT
 	allTiles := make([]*model.Tile, 0)
 	for _, column := range columns {
 		numberOfTiles := gameLayout[column]
-		tiles := make([]*model.Tile, numberOfTiles, numberOfTiles)
+		tiles := make([]*model.Tile, numberOfTiles)
 		for i := 0; i < numberOfTiles; i++ {
 
 			landscapeCode := code[codeIndex : codeIndex+1]
 			landscape := model.Landscapes[landscapeCode]
 			if landscape.Name == "" {
-				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Landscape", landscapeCode)
+				errorMessage := fmt.Sprintf("Inflation error: %s is not a valid code for a Landscape", sanitize.Name(landscapeCode))
 				log.Warn(errorMessage)
 				return Board{}, errors.New(errorMessage)
 			}
@@ -50,7 +50,7 @@ func inflateGameFromCode(code string, gameLayout map[string]int, gameType *GameT
 			numberCode := code[codeIndex+1 : codeIndex+2]
 			number := model.Numbers[numberCode]
 			if number.Score == 0 {
-				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Number", numberCode)
+				errorMessage := fmt.Sprintf("Inflation error: %s is not a valid code for a Number", sanitize.Name(numberCode))
 				log.Warn(errorMessage)
 				return Board{}, errors.New(errorMessage)
 			}
@@ -58,7 +58,7 @@ func inflateGameFromCode(code string, gameLayout map[string]int, gameType *GameT
 			harborCode := code[codeIndex+2 : codeIndex+3]
 			harbor := model.Harbors[harborCode]
 			if harbor.Name == "" {
-				errorMessage := fmt.Sprintf("Inflation error: %v is not a valid code for a Harbor", harborCode)
+				errorMessage := fmt.Sprintf("Inflation error: %s is not a valid code for a Harbor", sanitize.Name(harborCode))
 				log.Warn(errorMessage)
 				return Board{}, errors.New(errorMessage)
 			}
