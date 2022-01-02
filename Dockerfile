@@ -9,6 +9,7 @@ FROM alpine:3
 RUN apk --no-cache add ca-certificates
 EXPOSE 8080
 ENV PORT=8080
+ENV ROOT_PATH="/"
 ENTRYPOINT ["/usr/bin/cmg"]
 CMD ["serve"]
 COPY --from=builder /go/src/cmg/bin/$TARGETARCH/cmg /usr/bin/cmg

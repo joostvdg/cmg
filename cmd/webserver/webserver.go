@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -22,7 +23,9 @@ const (
 	envSentry       = "SENTRY_DSN"
 	envSegmentKey   = "SEGMENT_KEY"
 	envLogLevel     = "LOG_LEVEL"
+	envRootPath     = "ROOT_PATH"
 
+	defaultRootPath     = "/"
 	defaultPort         = "8080"
 	debugLogLevel       = "DEBUG"
 	defaultLogLevel     = "INFO"
@@ -37,6 +40,15 @@ func StartWebserver() {
 	port, portOk := os.LookupEnv(envPort)
 	if !portOk {
 		port = defaultPort
+	}
+
+	rootPath, rootPathOk := os.LookupEnv(envRootPath)
+	if !rootPathOk || rootPath == "" {
+		rootPath = defaultRootPath
+	}
+	// ensure we end with a "/" so all derived paths will work
+	if !strings.HasSuffix(rootPath, "/") {
+		rootPath += "/"
 	}
 
 	logFormat, logFormatOk := os.LookupEnv(envLogFormatter)
@@ -70,6 +82,7 @@ func StartWebserver() {
 	// Echo instance
 	e := echo.New()
 	log.WithFields(log.Fields{
+		"RootPath":        rootPath,
 		"Port":            port,
 		"LogFormatter":    logFormat,
 		"LogLevel":        logLevel,
@@ -109,21 +122,32 @@ func StartWebserver() {
 	e.Use(sentryecho.New(sentryecho.Options{}))
 
 	// Routes
-	e.GET("/", hello)
-	e.GET("/rollout", rolloutDemo)
-	e.GET("/api/map", webserver.GetMap)
-	e.GET("/api/v1/map", webserver.GetMapViaCodeGeneration)
-	e.GET("/api/map/code", webserver.GetMapCode)
-	e.GET("/api/map/code/:code", webserver.GetMapByCode)
-	e.GET("/api/legend", webserver.GetMapLegend)
+	g := e.Group(rootPath)
+	g.GET("", handleRoutes)
+	g.GET("routes", handleRoutes)
+	g.GET("rollout", rolloutDemo)
+
+	g.GET("api/map", webserver.GetMap)
+	g.GET("api/v1/map", webserver.GetMapViaCodeGeneration)
+	g.GET("api/map/code", webserver.GetMapCode)
+	g.GET("api/map/code/:code", webserver.GetMapByCode)
+	g.GET("api/legend", webserver.GetMapLegend)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":" + port))
 }
 
-// Handler
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!!")
+// handleRoutes shows the routes that are handled
+func handleRoutes(c echo.Context) error {
+	content := c.Echo().Routes()
+
+	callback := c.QueryParam("callback")
+	jsonp := c.QueryParam("jsonp")
+
+	if jsonp == "true" {
+		return c.JSONP(http.StatusOK, callback, &content)
+	}
+	return c.JSON(http.StatusOK, &content)
 }
 
 func rolloutDemo(c echo.Context) error {
