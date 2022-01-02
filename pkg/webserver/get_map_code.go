@@ -2,6 +2,7 @@ package webserver
 
 import (
 	"github.com/joostvdg/cmg/cmd/context"
+	"github.com/prometheus/client_golang/prometheus"
 	"gopkg.in/segmentio/analytics-go.v3"
 	"net/http"
 	"time"
@@ -27,8 +28,8 @@ func GetMapCode(c echo.Context) error {
 	gameCode := model.GameCode{GameCode: wholeMap.GameCode}
 
 	// TODO what is a userId?
-	if cmgContext.Client != nil {
-		cmgContext.Client.Enqueue(analytics.Page{
+	if cmgContext.SegmentClient != nil {
+		cmgContext.SegmentClient.Enqueue(analytics.Page{
 			UserId: requestInfo.RequestId.String(),
 			Name:   "CMG",
 			Properties: analytics.NewProperties().
@@ -47,8 +48,8 @@ func GetMapCode(c echo.Context) error {
 // and then inflate the game code before validating the board
 // WARNING: currently only supports default normal map
 func GetMapViaCodeGeneration(c echo.Context) error {
-	cmgContext := c.(*context.CMGContext)
 	start := time.Now()
+	cmgContext := c.(*context.CMGContext)
 	log.Info(" > Generate Game by Game Code start")
 	requestInfo := GetRequestInfoFromRequest(c)
 	rules := GetGameRulesFromRequest(c)
@@ -67,21 +68,32 @@ func GetMapViaCodeGeneration(c echo.Context) error {
 	}).Info(" < Generate Game by Game Code finish")
 
 	// TODO what is a userId?
-	if cmgContext.Client != nil {
-		cmgContext.Client.Enqueue(analytics.Page{
+	if cmgContext.SegmentClient != nil {
+		cmgContext.SegmentClient.Enqueue(analytics.Page{
 			UserId: requestInfo.RequestId.String(),
 			Name:   "Generate Map V2",
 			Properties: analytics.NewProperties().
 				SetURL(requestInfo.RequestURI),
 		})
 
-		cmgContext.Client.Enqueue(analytics.Track{
+		cmgContext.SegmentClient.Enqueue(analytics.Track{
 			UserId: requestInfo.RequestId.String(),
 			Event:  "Generate Map V2",
 			Properties: analytics.NewProperties().
 				Set("generation_time", elapsed).
 				Set("game_type", board.GameType.Name),
 		})
+	}
+
+	attemps, ok := cmgContext.MapGenAttempts.(prometheus.Histogram)
+	if ok {
+		attemps.Observe(float64(board.TotalGenerations))
+	}
+
+	duration, ok := cmgContext.MapGenDuration.(prometheus.Histogram)
+	if ok {
+		elapsedInSeconds := elapsed / 1000000000
+		duration.Observe(float64(elapsedInSeconds))
 	}
 
 	if requestInfo.JSONP {

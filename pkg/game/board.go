@@ -13,12 +13,13 @@ import (
 
 // Board the Catan game Board, contains the Tiles and how they are distributed on the Board
 type Board struct {
-	Tiles     []*model.Tile
-	Board     map[string][]*model.Tile
-	GameType  GameType
-	Harbors   map[string]*model.Harbor
-	GameCode  string
-	WaitGroup sync.WaitGroup
+	Tiles            []*model.Tile
+	Board            map[string][]*model.Tile
+	GameType         GameType
+	Harbors          map[string]*model.Harbor
+	GameCode         string
+	WaitGroup        sync.WaitGroup
+	TotalGenerations int
 }
 
 // IsValid wrapper function for encapsulating all the validations for the map

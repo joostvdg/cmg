@@ -9,10 +9,12 @@ require (
 	github.com/go-errors/errors v1.4.1
 	github.com/google/uuid v1.3.0
 	github.com/kennygrant/sanitize v1.2.4
+	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/labstack/gommon v0.3.1 // indirect
-	github.com/rollout/rox-go v0.0.0-20211214110057-f6a8690451c9
-	github.com/segmentio/backo-go v0.0.0-20200129164019-23eae7c10bd3 // indirect
+	github.com/prometheus/client_golang v1.11.0
+	github.com/prometheus/common v0.32.1 // indirect
+	github.com/segmentio/backo-go v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
@@ -23,5 +25,29 @@ require (
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0
 )
+
+exclude github.com/prometheus/client_golang v0.9.1
+
+exclude github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
+
+exclude github.com/prometheus/client_golang v1.0.0
+
+exclude github.com/prometheus/client_golang v1.3.0
+
+exclude github.com/prometheus/client_golang v1.4.0
+
+exclude github.com/prometheus/client_golang v1.7.1
+
+exclude github.com/prometheus/client_golang v1.10.0
+
+exclude github.com/prometheus/common v0.9.1
+
+exclude github.com/prometheus/common v0.25.0
+
+exclude github.com/prometheus/common v0.26.0
+
+exclude github.com/labstack/echo/v4 v4.3.0
+
+exclude github.com/labstack/echo/v4 v4.5.0
 
 go 1.16

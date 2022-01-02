@@ -79,15 +79,15 @@ func GetMapByCode(ctx echo.Context) error {
 	}).Info("Created a new map")
 
 	// TODO what is a userId?
-	if cmgContext.Client != nil {
-		cmgContext.Client.Enqueue(analytics.Page{
+	if cmgContext.SegmentClient != nil {
+		cmgContext.SegmentClient.Enqueue(analytics.Page{
 			UserId: requestUuid.String(),
 			Name:   "Map By Code",
 			Properties: analytics.NewProperties().
 				SetURL(ctx.Request().RequestURI),
 		})
 
-		cmgContext.Client.Enqueue(analytics.Track{
+		cmgContext.SegmentClient.Enqueue(analytics.Track{
 			UserId: requestUuid.String(),
 			Event:  "Map By Code",
 			Properties: analytics.NewProperties().

@@ -4,10 +4,11 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/joostvdg/cmg/cmd/context"
-	"github.com/joostvdg/cmg/pkg/rollout"
 	"github.com/joostvdg/cmg/pkg/webserver"
+	promecho "github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/segmentio/analytics-go.v3"
 	"net/http"
@@ -21,16 +22,19 @@ const (
 	envPort         = "PORT"
 	envLogFormatter = "LOG_FORMAT"
 	envSentry       = "SENTRY_DSN"
-	envSegmentKey   = "SEGMENT_KEY"
 	envLogLevel     = "LOG_LEVEL"
 	envRootPath     = "ROOT_PATH"
 
-	defaultRootPath     = "/"
-	defaultPort         = "8080"
-	debugLogLevel       = "DEBUG"
-	defaultLogLevel     = "INFO"
-	defaultLogFormatter = "PLAIN"
-	jsonLogFormatter    = "JSON"
+	defaultRootPath       = "/"
+	defaultPort           = "8080"
+	debugLogLevel         = "DEBUG"
+	defaultLogLevel       = "INFO"
+	defaultLogFormatter   = "PLAIN"
+	jsonLogFormatter      = "JSON"
+	prometheusMetricsPath = "metrics"
+	prometheusEchoSystem  = "echo"
+	prometheusCmgSystem   = "cmg"
+	envSegmentKey         = "SEGMENT_KEY"
 )
 
 // StartWebserver starts the Echo webserver
@@ -104,28 +108,67 @@ func StartWebserver() {
 		defer segmentClient.Close()
 	}
 
-	// Segment for Custom Context
-	e.Use(func(e echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			cmgContext := &context.CMGContext{
-				c,
-				segmentClient,
-			}
-			return e(cmgContext)
-		}
-	})
-
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 	e.Use(sentryecho.New(sentryecho.Options{}))
+	// Enable metrics middleware
+	p := promecho.NewPrometheus(prometheusEchoSystem, nil)
+	p.MetricsPath = rootPath + prometheusMetricsPath
+	p.Use(e)
+
+	var mapGenCollector prometheus.Collector = prometheus.NewHistogram(
+		prometheus.HistogramOpts{
+			Subsystem: prometheusCmgSystem,
+			Name:      "map_generations",
+			Help:      "Number of map generation attempts it took to generate a valid map (1)",
+			Buckets: []float64{
+				1,
+				10,
+				25,
+				50,
+				100,
+				250,
+				500,
+				1000,
+				2000,
+			},
+		},
+	)
+	var mapGenDurationCollector prometheus.Collector = prometheus.NewHistogram(
+		prometheus.HistogramOpts{
+			Subsystem: prometheusCmgSystem,
+			Name:      "map_generation_duration",
+			Help:      "Duration of map generation attempts it took to generate a valid map",
+		},
+	)
+
+	if err := prometheus.Register(mapGenCollector); err != nil {
+		log.Warnf("Could not register Prometheus Collector for Map Generations: %v", err)
+	}
+
+	if err := prometheus.Register(mapGenDurationCollector); err != nil {
+		log.Warnf("Could not register Prometheus Collector for Map Generation Duration: %v", err)
+	}
+
+	// Segment for Custom Context
+	e.Use(func(e echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cmgContext := &context.CMGContext{
+				Context:        c,
+				MapGenAttempts: mapGenCollector,
+				MapGenDuration: mapGenDurationCollector,
+				SegmentClient:  segmentClient,
+			}
+			return e(cmgContext)
+		}
+	})
 
 	// Routes
 	g := e.Group(rootPath)
 	g.GET("", handleRoutes)
 	g.GET("routes", handleRoutes)
-	g.GET("rollout", rolloutDemo)
 
 	g.GET("api/map", webserver.GetMap)
 	g.GET("api/v1/map", webserver.GetMapViaCodeGeneration)
@@ -148,12 +191,4 @@ func handleRoutes(c echo.Context) error {
 		return c.JSONP(http.StatusOK, callback, &content)
 	}
 	return c.JSON(http.StatusOK, &content)
-}
-
-func rolloutDemo(c echo.Context) error {
-	message := "Stay put"
-	if rollout.RoxContainer.EnableTutorial.IsEnabled(nil) {
-		message = "Lets Rollout"
-	}
-	return c.String(http.StatusOK, message)
 }

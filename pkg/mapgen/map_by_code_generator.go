@@ -24,6 +24,7 @@ func GenerateBoardByGameCode(rules game.GameRules) game.Board {
 		if board.IsValid(rules, gameType) {
 			log.Info("Required iterations: ", totalGenerations)
 			board.GameCode = code
+			board.TotalGenerations = totalGenerations
 			return board
 		}
 		totalGenerations++
