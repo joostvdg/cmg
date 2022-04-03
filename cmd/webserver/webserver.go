@@ -87,7 +87,7 @@ func StartWebserver() {
 	}
 
 	cmgAnalyticsEndpoint, cmgAnalyticsEndpointOk := os.LookupEnv(envAnalyticsEndpoint)
-	if cmgAnalyticsEndpointOk {
+	if !cmgAnalyticsEndpointOk {
 		cmgAnalyticsEndpoint = ""
 	}
 
