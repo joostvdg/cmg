@@ -1,29 +1,32 @@
 package webserver
 
 import (
+	"net/http"
+	"os"
+	"runtime"
+	"strings"
+	"time"
+
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
-	"github.com/joostvdg/cmg/cmd/context"
-	"github.com/joostvdg/cmg/pkg/webserver"
 	promecho "github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/segmentio/analytics-go.v3"
-	"net/http"
-	"os"
-	"runtime"
-	"strings"
-	"time"
+
+	"github.com/joostvdg/cmg/cmd/context"
+	"github.com/joostvdg/cmg/pkg/webserver"
 )
 
 const (
-	envPort         = "PORT"
-	envLogFormatter = "LOG_FORMAT"
-	envSentry       = "SENTRY_DSN"
-	envLogLevel     = "LOG_LEVEL"
-	envRootPath     = "ROOT_PATH"
+	envPort              = "PORT"
+	envLogFormatter      = "LOG_FORMAT"
+	envSentry            = "SENTRY_DSN"
+	envLogLevel          = "LOG_LEVEL"
+	envRootPath          = "ROOT_PATH"
+	envAnalyticsEndpoint = "ANALYTICS_API_ENDPOINT"
 
 	defaultRootPath       = "/"
 	defaultPort           = "8080"
@@ -83,18 +86,24 @@ func StartWebserver() {
 		}
 	}
 
+	cmgAnalyticsEndpoint, cmgAnalyticsEndpointOk := os.LookupEnv(envAnalyticsEndpoint)
+	if cmgAnalyticsEndpointOk {
+		cmgAnalyticsEndpoint = ""
+	}
+
 	// Echo instance
 	e := echo.New()
 	log.WithFields(log.Fields{
-		"RootPath":        rootPath,
-		"Port":            port,
-		"LogFormatter":    logFormat,
-		"LogLevel":        logLevel,
-		"OS":              runtime.GOOS,
-		"ARCH":            runtime.GOARCH,
-		"CPUs":            runtime.NumCPU(),
-		"Sentry Enabled":  sentryOk,
-		"Segment Enabled": segmentOk,
+		"RootPath":           rootPath,
+		"Port":               port,
+		"LogFormatter":       logFormat,
+		"LogLevel":           logLevel,
+		"OS":                 runtime.GOOS,
+		"ARCH":               runtime.GOARCH,
+		"CPUs":               runtime.NumCPU(),
+		"Sentry Enabled":     sentryOk,
+		"Segment Enabled":    segmentOk,
+		"Analytics Endpoint": cmgAnalyticsEndpoint,
 	}).Info("Webserver started")
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -118,6 +127,7 @@ func StartWebserver() {
 	p.MetricsPath = rootPath + prometheusMetricsPath
 	p.Use(e)
 
+	// Define and Register custom Prometheus Metrics
 	var mapGenCollector prometheus.Collector = prometheus.NewHistogram(
 		prometheus.HistogramOpts{
 			Subsystem: prometheusCmgSystem,

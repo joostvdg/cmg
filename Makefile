@@ -40,7 +40,7 @@ linux:
 	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=amd64 $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME) $(MAIN_GO)
 
 multiarch:
-	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=${ARCH} $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(ARCH)/$(NAME) $(MAIN_GO)
+	CGO_ENABLED=0 go build -o bin/$(NAME) $(MAIN_GO)
 
 .PHONY: release clean
 
@@ -93,3 +93,9 @@ gpush: dbuild
 
 gdeploy: gpush
 	gcloud run deploy cmg --image=gcr.io/$(PROJECT_ID)/cmg:latest --memory=128Mi --max-instances=2 --timeout=30 --project=$(PROJECT_ID) --platform managed --allow-unauthenticated --region=europe-west4
+
+dxbuild:
+	docker buildx build . --platform linux/arm64,linux/amd64 --tag caladreas/cmg:0.29.1-c
+
+dxpush:
+	docker buildx build . --platform linux/arm64,linux/amd64 --tag caladreas/cmg:0.29.1-c --push
