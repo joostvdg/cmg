@@ -94,18 +94,20 @@ func StartWebserver() {
 	// Echo instance
 	e := echo.New()
 	log.WithFields(log.Fields{
-		"RootPath":           rootPath,
-		"Port":               port,
-		"LogFormatter":       logFormat,
-		"LogLevel":           logLevel,
-		"OS":                 runtime.GOOS,
-		"ARCH":               runtime.GOARCH,
-		"CPUs":               runtime.NumCPU(),
+		"RootPath":     rootPath,
+		"Port":         port,
+		"LogFormatter": logFormat,
+		"LogLevel":     logLevel,
+		"OS":           runtime.GOOS,
+		"ARCH":         runtime.GOARCH,
+		// setting GOMAXPROCS is delegated to
+		// automaxprocs: runtime.GOMAXPROCS(0)
+		// done via init in main
+		"CPUs":               runtime.GOMAXPROCS(0),
 		"Sentry Enabled":     sentryOk,
 		"Segment Enabled":    segmentOk,
 		"Analytics Endpoint": cmgAnalyticsEndpoint,
 	}).Info("Webserver started")
-	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	var segmentClient analytics.Client
 	if segmentOk {
