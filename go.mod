@@ -11,7 +11,7 @@ require (
 	github.com/kennygrant/sanitize v1.2.4
 	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.9.0
-	github.com/prometheus/client_golang v1.11.0
+	github.com/prometheus/client_golang v1.11.1
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/segmentio/backo-go v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
