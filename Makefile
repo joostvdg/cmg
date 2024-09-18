@@ -11,6 +11,8 @@ PKGS := $(subst  :,_,$(PKGS))
 BUILDFLAGS := ''
 CGO_ENABLED = 0
 VENDOR_DIR=vendor
+LOCAL_VERSION = $(shell git describe --tags --always)
+PACKAGE_VERSION ?= "0.3.0-$(LOCAL_VERSION)"
 
 all: build
 
@@ -97,5 +99,7 @@ gdeploy: gpush
 dxbuild:
 	docker buildx build . --platform linux/arm64,linux/amd64 --tag caladreas/cmg:0.29.1-c
 
+# dxpush:
+# 	docker buildx build . --platform linux/arm64,linux/amd64 --tag caladreas/cmg:0.3.1 --push
 dxpush:
-	docker buildx build . --platform linux/arm64,linux/amd64 --tag caladreas/cmg:0.29.1-c --push
+	docker buildx build . --platform linux/arm64,linux/amd64 --tag ghcr.io/joostvdg/cmg:${PACKAGE_VERSION} --push

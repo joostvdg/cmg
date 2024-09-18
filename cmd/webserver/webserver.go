@@ -66,8 +66,15 @@ func StartWebserver() {
 	}
 
 	logLevel, logLevelFormatOk := os.LookupEnv(envLogLevel)
-	if logLevelFormatOk && logLevel == debugLogLevel {
-		log.SetLevel(log.DebugLevel)
+	if logLevelFormatOk {
+		switch logLevel {
+		case "WARN":
+			log.SetLevel(log.WarnLevel)
+		case "ERROR":
+			log.SetLevel(log.ErrorLevel)
+		case "DEBUG":
+			log.SetLevel(log.DebugLevel)
+		}
 	} else {
 		logLevel = defaultLogLevel
 	}
