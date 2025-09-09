@@ -21,7 +21,7 @@ The application is running as a free heroku app to try: [https://catan-map-gener
 
 Look for the Code to see the API for for more commands (or the shell scripts such as `6p-game.sh`).
 
-The UI is available at [https://catan-ui.herokuapp.com//](https://catan-ui.herokuapp.com/).
+The UI is available at [https://map.cmg.joostvdg.net/](https://map.cmg.joostvdg.net/).
 
 ## Run as Google Cloud Function
 
@@ -51,3 +51,4 @@ Probably best to state it explicitly.
 ```
 
 For more info, [read Heroku's docs on Go](https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-go).
+
